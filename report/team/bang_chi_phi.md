@@ -133,36 +133,192 @@ QA findings: không có lỗi dữ liệu gốc; xử lý p=0/CPS không thành 
 **CP1 COMPLETE:** A1 DONE · A2 DONE (9 dòng) · A3 DONE (4 loại) · A4 DONE (2 volume) · Code execution DONE · Unit tests DONE · Report phần A DONE. `mo_hinh()` sẵn sàng CP2 với tham số giá/hệ số và giới hạn lượt chạy; cần trace đầy đủ 1..so_lan_chay trước khi gọi, không tự suy diễn kết quả phản thực hay fallback. CP2–CP5 chưa triển khai; B1–B4 bên dưới giữ nguyên template.
 
 
-## B1 · Đổi từng yếu tố
+## B1 · One-factor Sensitivity — Đổi từng yếu tố
 
-| Kịch bản | Cách tính | Chi phí mỗi việc thành công | Thay đổi (%) |
-| --- | --- | ---: | ---: |
-| Giá token gấp đôi | 52 đ và 260 đ cho 1.000 token; giá tool giữ nguyên | ... | ... |
-| Giá token giảm một nửa | 13 đ và 65 đ | ... | ... |
-| Tỉ lệ xem lại gấp đôi | Tiền xem lại × 2 | ... | ... |
-| Tỉ lệ xem lại giảm một nửa | Tiền xem lại ÷ 2 | ... | ... |
-| Số ca làm lại gấp đôi | Tiền làm lại × 2 | ... | ... |
-| Số ca làm lại giảm một nửa | Tiền làm lại ÷ 2 | ... | ... |
-| Lương nhân viên tăng 25% | 2.500 đ mỗi phút | ... | ... |
-| Chỉ cho chạy tối đa 2 lần | Bỏ lần chạy có attempt > 2; yêu cầu có so_lan_chay > 2 coi là chuyen_nhan_vien | ... | ... |
-| Chỉ cho chạy 1 lần | Như trên với giới hạn 1 | ... | ... |
+CP2 tiếp nối CP1; trạng thái “CP2–CP5 chưa triển khai” ở phần kiểm chứng CP1 phía trên là ghi nhận lịch sử, được giữ nguyên theo yêu cầu bảo toàn phần A. Phần B này hoàn thành riêng CP2, không triển khai CP3–CP5.
 
-## B2 · Đổi một cặp và xếp hạng
+**Nguồn và assumptions:** cùng 1.200 requests, 1.624 runs; measured trace trong lab là CSV giả lập, không phải đo tại doanh nghiệp thật. Phút `_simulated` là simulated inputs; giá, hệ số, giới hạn retry và lương là giả định. Mọi tổng chi phí, CPS, delta và tỷ lệ trong B1–B4 đều **simulated**, trừ khi chỉ rõ số đếm/giá trị từ trace.
 
-- Giá token gấp đôi cùng lúc tỉ lệ xem lại gấp đôi: ...
-- Xếp hạng ba yếu tố ảnh hưởng mạnh nhất: 1. ... · 2. ... · 3. ...
+Mỗi kịch bản gọi lại `mo_hinh()`, giữ nguyên input; giá tool vẫn 15 VND/lượt. Hệ số xem lại/làm lại chỉ nhân tiền của hoạt động đó, không tạo thêm yêu cầu hay tự đổi kết quả chất lượng. Không đưa fixed cost 40 triệu VND/tháng vào B1–B4.
 
-## B3 · Giới hạn chạy lại có thật sự rẻ hơn
+Đơn vị: total cost = VND; CPS và delta tuyệt đối = VND/success; delta phần trăm = (CPS kịch bản / CPS baseline − 1) × 100. Giữ số thực khi tính, làm tròn 3 chữ số thập phân khi trình bày.
 
-| Giới hạn | Tổng chi phí trợ lý | Số yêu cầu không thành công | Chi phí cả hệ thống | Chi phí mỗi việc thành công |
-| --- | ---: | ---: | ---: | ---: |
-| 1 lần | ... | ... | ... | ... |
-| 2 lần | ... | ... | ... | ... |
-| 3 lần | ... | ... | ... | ... |
 
-- Giới hạn nào rẻ nhất cho công ty? Có trùng với giới hạn cho chi phí mỗi việc thành công thấp nhất không? ...
+| Scenario ID | Kịch bản | Parameter | Total cost (VND, simulated) | Successes | CPS (VND/success, simulated) | Delta CPS (VND/success, simulated) | Delta CPS (%, simulated) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| B1-00 | Baseline | `{}` | 4.373.585,132 | 978 | 4.471,968 | 0,000 | 0,000 |
+| B1-01 | Token ×2 | `{'gia_vao': 52, 'gia_ra': 260}` | 4.619.170,264 | 978 | 4.723,078 | 251,110 | 5,615 |
+| B1-02 | Token ×0,5 | `{'gia_vao': 13, 'gia_ra': 65}` | 4.250.792,566 | 978 | 4.346,414 | -125,555 | -2,808 |
+| B1-03 | Review ×2 | `{'he_so_xem_lai': 2.0}` | 6.153.585,132 | 978 | 6.292,009 | 1.820,041 | 40,699 |
+| B1-04 | Review ×0,5 | `{'he_so_xem_lai': 0.5}` | 3.483.585,132 | 978 | 3.561,948 | -910,020 | -20,349 |
+| B1-05 | Rework ×2 | `{'he_so_lam_lai': 2.0}` | 6.637.585,132 | 978 | 6.786,897 | 2.314,928 | 51,765 |
+| B1-06 | Rework ×0,5 | `{'he_so_lam_lai': 0.5}` | 3.241.585,132 | 978 | 3.314,504 | -1.157,464 | -25,883 |
+| B1-07 | Lương +25% | `{'luong_phut': 2500}` | 5.384.585,132 | 978 | 5.505,711 | 1.033,742 | 23,116 |
+| B1-08 | Tối đa 2 lần | `{'max_lan_chay': 2}` | 4.093.220,230 | 966 | 4.237,288 | -234,680 | -5,248 |
+| B1-09 | Tối đa 1 lần | `{'max_lan_chay': 1}` | 3.621.780,644 | 881 | 4.110,988 | -360,980 | -8,072 |
 
-## B4 · Nếu phải xem lại tất cả
 
-- Chi phí mỗi việc thành công khi xem lại 100% (`noi_dia` + `hang_nang`), so với 12.000 đ: ...
-- Kết quả này nói gì về thứ pilot cần học được? ...
+**Đối chiếu:** CPS của 9 kịch bản lệch tối đa 0,0150% so với CPS đã làm tròn của giảng viên; delta % lệch tương đối tối đa 0,9194% so với delta % làm tròn, đều dưới 2%. Chênh lệch chỉ do làm tròn, không hiệu chỉnh số tính.
+
+**Kiểm tra tuyến tính (simulated):** delta giảm 50% bằng −0,5 × delta gấp đôi; unit tests kiểm chứng số chưa làm tròn với sai số tuyệt đối dưới 1e-7 VND/success.
+
+
+| Yếu tố | Delta ×2 (VND/success) | Delta ×0,5 (VND/success) | −0,5 × delta ×2 (VND/success) | Kết quả |
+| --- | --- | --- | --- | --- |
+| Token | 251,110 | -125,555 | -125,555 | PASS |
+| Review | 1.820,041 | -910,020 | -910,020 | PASS |
+| Rework | 2.314,928 | -1.157,464 | -1.157,464 | PASS |
+
+
+- **Nhận xét:** tăng rework gấp đôi làm CPS tăng 51,765%, lớn hơn token gấp đôi (+5,615%, simulated); cần ưu tiên đo công sức nhân viên. Giới hạn attempts đổi cả chi phí và số success (978 → 966 → 881), nên không áp dụng kiểm tra tuyến tính cho retry.
+
+## B2 · Combined Sensitivity — Đổi một cặp và xếp hạng
+
+Kịch bản: `gia_vao=52, gia_ra=260, he_so_xem_lai=2.0`; các tham số khác giữ nguyên. Interaction I = delta CPS kết hợp − (delta CPS token + delta CPS review), đơn vị VND/success; đây là tác động trên CPS với mẫu số không đổi.
+
+
+| Metric | Giá trị (simulated) |
+| --- | --- |
+| Total cost | 6.399.170,264 VND |
+| Successes | 978 |
+| Combined CPS | 6.543,119 VND/success |
+| Combined delta CPS | 2.071,150 VND/success |
+| Combined delta % | 46,314% |
+| Tổng hai delta riêng | 2.071,150 VND/success |
+| Interaction effect | 0,000000000 VND/success |
+
+
+Xếp hạng theo mức tăng CPS của các cú sốc bất lợi được chỉ định (simulated):
+
+
+| Hạng | Cú sốc | Delta CPS (%) |
+| --- | --- | --- |
+| 1 | Rework ×2 | 51,765% |
+| 2 | Review ×2 | 40,699% |
+| 3 | Lương +25% | 23,116% |
+
+
+- **Tuyến tính:** combined CPS 6.543,119 VND/success (+46,314%, simulated), interaction 0,000000000; không có tương tác trong mô hình cộng khi 978 success giữ nguyên.
+- **Ý nghĩa ranking:** rework/review là cú sốc +100%, lương là +25%; thứ hạng 51,765% → 40,699% → 23,116% (simulated) không phải hệ số nhạy chuẩn hóa giữa các tham số.
+- **Nhân sự so với token:** review + rework chiếm 92,464% tổng chi phí, token chỉ 5,615% (simulated); đây là lý do chi phí nhân sự ảnh hưởng mạnh hơn.
+- **Retry:** kỹ thuật của lượt 2–3 là 93.804,488 VND, chỉ 2,145% tổng chi phí (simulated), đã nằm trong token + tool; không được cộng thêm và không bỏ qua ảnh hưởng lên success/fallback.
+- **Pilot cần theo dõi:** 3 nhóm yếu tố là tỷ lệ và phút làm lại/ca, tỷ lệ và phút xem lại/yêu cầu, lương thực trả/phút; các cú sốc hiện tại lần lượt làm CPS tăng 51,765%, 40,699% và 23,116% (simulated).
+
+## B3 · Retry Economics — Giới hạn chạy lại và chi phí cả hệ thống
+
+**Quy ước đề:** `attempt <= k`; yêu cầu có `so_lan_chay > k` chuyển nhân viên và đặt cả hai cột phút simulated về 0. Không giữ success cuối cùng nếu phải dùng lượt đã bị cắt; không sửa DataFrame gốc.
+
+**Assumption fallback:** 12.000 VND cho mỗi unresolved = 1.200 − agent successes. System cost = agent cost + fallback; system/request chia 1.200, agent CPS chia successes. Toàn bộ chi phí trong bảng **simulated**, chưa cộng fixed cost 40 triệu VND/tháng của A4.
+
+
+| Max attempts | Agent total cost (VND) | Agent successes | Unresolved | Fallback cost (VND) | System cost (VND) | System cost/request (VND/request) | Agent CPS (VND/success) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 3.621.780,644 | 881 | 319 | 3.828.000,000 | 7.449.780,644 | 6.208,151 | 4.110,988 |
+| 2 | 4.093.220,230 | 966 | 234 | 2.808.000,000 | 6.901.220,230 | 5.751,017 | 4.237,288 |
+| 3 | 4.373.585,132 | 978 | 222 | 2.664.000,000 | 7.037.585,132 | 5.864,654 | 4.471,968 |
+
+
+- **Agent CPS thấp nhất:** 1 attempt, 4.110,988 VND/success (simulated); đây không phải chính sách rẻ nhất cho công ty vì còn 319 unresolved.
+- **System cost thấp nhất:** 2 attempts, 6.901.220,230 VND cho 1.200 yêu cầu, tương đương 5.751,017 VND/request (simulated).
+- **Vì sao khác nhau:** từ 2 xuống 1 attempt tiết kiệm 471.439,586 VND agent nhưng thêm 85 việc sang nhân viên, tăng fallback 1.020.000,000 VND; ròng system cost tăng 548.560,414 VND (simulated).
+- **Khuyến nghị:** dùng system cost/request để chọn 2 attempts trong mô hình toàn mẫu (5.751,017 VND/request, simulated), kèm success và an toàn; cần xác minh lại theo phạm vi pilot và dữ liệu thực trước khi chốt chính sách.
+- **Giới hạn mô hình:** 12.000 VND/unresolved có thể chồng với phút rework đã tính, nhất là 74 ca lam_lai tại k=3; giữ nguyên công thức đề và đo phần xử lý còn lại trong pilot, không tự xóa rework để giảm chi phí.
+
+## B4 · 100% Human Review — Xem lại toàn bộ đầu ra có run ok
+
+Phạm vi **noi_dia + hang_nang**; “100%” là mọi yêu cầu có ít nhất 1 run `status='ok'`, không phải tất cả yêu cầu hay tất cả run. Các số đếm dưới đây lấy từ CSV; toàn bộ dữ liệu lab vẫn là giả lập.
+
+
+| Đầu vào | Giá trị | Điều kiện lọc |
+| --- | --- | --- |
+| Requests trong phạm vi | 982 | loai thuộc noi_dia/hang_nang |
+| Successful resolutions | 900 | ket_qua == 'thanh_cong' trong phạm vi |
+| Requests cần review | 948 | request_id duy nhất có >=1 run ok trong phạm vi |
+| Rework cases | 48 | ket_qua == 'lam_lai' trong phạm vi |
+| Technical cost | 224.513,274 VND | token + tool của mọi run trong phạm vi, kể cả lỗi |
+| Review time / lương | 5 phút/yêu cầu; 2.000 VND/phút | assumptions của đề |
+
+
+Thống kê **simulated inputs**, lọc theo `ket_qua == lam_lai` (không lọc theo phút > 0 trên mọi yêu cầu):
+
+
+| Tập lọc | Số ca | Tổng phút simulated | Mean phút/ca (simulated) | Median phút/ca (simulated) |
+| --- | --- | --- | --- | --- |
+| Toàn mẫu | 74 | 1132 | 15,297297297 | 14,500 |
+| Riêng phạm vi pilot | 48 | 780 | 16,250 | 16,000 |
+
+
+Scenario 2 theo hướng dẫn dùng mean **toàn mẫu** để áp lên 48 ca trong phạm vi; không dùng nhầm mean 16,25 phút của riêng pilot. Bảng báo cả mean toàn mẫu làm tròn 15,3 và giá trị đầy đủ; không làm tròn trung gian ở dòng đầy đủ. Phút review/rework mới **thay thế** chi phí review/rework cũ, không cộng chồng hai bộ phút.
+
+Công thức: review = 948 × 5 × 2.000; rework = 48 × t_rework × 2.000; total = technical + review + rework; CPS = total / 900. Bảng dưới có chi phí **simulated**; CPS chỉ chia thành công agent, chưa gồm fallback/fixed và không phải mô hình end-to-end cho cả 982 yêu cầu.
+
+
+| Kịch bản | Rework phút/ca | Review (VND) | Rework (VND) | Total (VND) | CPS (VND/success) | CPS/12.000 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 9 phút theo đề | 9,000000000 | 9.480.000,000 | 864.000,000 | 10.568.513,274 | 11.742,793 | 0,978566× |
+| Mean toàn mẫu làm tròn 1 số lẻ | 15,300000000 | 9.480.000,000 | 1.468.800,000 | 11.173.313,274 | 12.414,793 | 1,034566× |
+| Mean toàn mẫu đầy đủ | 15,297297297 | 9.480.000,000 | 1.468.540,541 | 11.173.053,815 | 12.414,504 | 1,034542× |
+
+
+- **Chênh do làm tròn:** dùng 15,3 thay mean đầy đủ 15,297297297 phút làm CPS tăng 0,288288 VND/success (simulated); mốc giảng viên ~12.414 VND là xấp xỉ, không phải kết quả làm tròn đến VND gần nhất của 12.414,793.
+
+### Break-even review time
+
+Từ `(technical + n_review × t_review × wage + n_rework × t_rework × wage) / successes <= 12.000`:
+
+`t_review_max = (12.000 × successes − technical − n_rework × t_rework × wage) / (n_review × wage)`.
+
+Thay successes = 900, technical = 224.513,274 VND, n_review = 948, n_rework = 48, wage = 2.000 VND/phút; giữ các đầu vào khác không đổi. Nếu tử số âm thì không có thời gian review không âm nào giúp hòa vốn. Ngưỡng dưới đây **simulated**.
+
+
+| Giả định rework | Review tối đa (phút/yêu cầu) | Làm tròn 1 chữ số | Kiểm tra CPS tại ngưỡng |
+| --- | --- | --- | --- |
+| 9,000000000 phút/ca | 5,122092 | 5,1 | 12.000 VND/success |
+| 15,300000000 phút/ca | 4,803105 | 4,8 | 12.000 VND/success |
+| 15,297297297 phút/ca | 4,803242 | 4,8 | 12.000 VND/success |
+
+
+- **Ý nghĩa chi phí:** ở review 5 phút, rework 9 phút cho CPS 11.742,793 VND (0,978566×); rework 15,3 phút cho 12.414,793 VND (1,034566×), đều simulated. Bắt buộc review toàn bộ có thể xóa lợi thế chi phí.
+- **Ý nghĩa vận hành:** review cần không quá 5,122092 phút với rework 9 phút, hoặc 4,803105 phút với rework 15,3 phút (simulated); đây là ngưỡng kinh tế giữ nguyên 900 success, chưa phải ngưỡng an toàn.
+- **Rủi ro và pilot:** không suy ra giảm review luôn tốt; cần kiểm tra lỗi sai tiền, mở lại và tỷ lệ sửa/bỏ cùng phút đo thật, vì mean rework pilot đã là 16,25 phút (simulated), cao hơn mean toàn mẫu 15,2973 phút.
+
+## Bằng chứng kiểm chứng CP2
+
+Code thêm: `phan_tich_do_nhay()`, `phan_tich_ket_hop()`, `phan_tich_gioi_han_chay()`, `phan_tich_xem_lai_100()` trong `src/lab13.py`; 16 tests riêng trong `src/test_cp2.py`. Không sửa `mo_hinh()`, các hàm CP1, `test_cp1.py`, CSV hoặc starter. Kết quả deterministic, không lấy đáp án giảng viên làm đầu vào hàm tính.
+
+Lệnh chạy thực tế tại `src/`, dùng `.venv` hiện có:
+
+```powershell
+$env:PATH = "$PWD\.venv\Scripts;$env:PATH"
+$env:PYTHONIOENCODING = 'utf-8'
+python lab13.py
+python -m unittest -v test_cp1 test_cp2
+python -m py_compile lab13.py test_cp1.py test_cp2.py
+git diff --check
+git status --short
+```
+
+Kết quả: **30 tests chạy, 30 PASS, 0 FAIL** (14 CP1 + 16 CP2). Script in đủ A1–A4 và B1–B4, known answers vẫn ĐẠT; kiểm tra syntax và Git diff không lỗi.
+
+| Test | Expected | Actual | PASS/FAIL |
+| --- | --- | --- | --- |
+| QA-B01 | Baseline khớp CP1 và tính CSV độc lập | 978 success; CPS 4.471,968438 VND/success (simulated) | PASS |
+| QA-B02 | Baseline + đúng 9 kịch bản gọi mo_hinh | Đủ ID B1-00..B1-09; spy xác nhận 9 bộ tham số | PASS |
+| QA-B03 | Token sensitivity, tuyến tính | Tính độc lập Decimal khớp; delta ×0,5 = −0,5 delta ×2 | PASS |
+| QA-B04 | Review sensitivity, tuyến tính | Tính độc lập Decimal và invariant khớp | PASS |
+| QA-B05 | Rework sensitivity, tuyến tính | Tính độc lập Decimal và invariant khớp | PASS |
+| QA-B06 | Lương +25% chỉ tăng phần nhân viên | CPS tăng 1.033,742331 VND/success (simulated) | PASS |
+| QA-B07 | Combined, interaction, ranking | Interaction <1e-9; rework → review → lương | PASS |
+| QA-B08 | Cắt run và success, xóa phút vượt cap | Synthetic cap=1 chỉ 1 success; token/tool 78/45 VND; review 2.000, rework 0 VND (simulated) | PASS |
+| QA-B09 | Agent + fallback = system | Cả 3 cap khớp từng dòng CSV/Decimal | PASS |
+| QA-B10 | Success + unresolved = 1.200 | Cả 3 cap đúng; 1 tối ưu agent CPS, 2 tối ưu system | PASS |
+| QA-B11 | B4 scope và review duy nhất theo request | 982 requests; 900 success; 948 review; 48 rework | PASS |
+| QA-B12 | Mean/median, review/rework và CPS | Khớp tính độc lập, đủ dòng 9 phút/mean làm tròn/mean đầy đủ | PASS |
+| QA-B13 | Break-even thế ngược vào công thức | CPS = 12.000; tăng review 0,01 phút thì vượt baseline (simulated) | PASS |
+| QA-B14 | Không mutation, deterministic | DataFrames và hash CSV/starter nguyên vẹn; chạy lại khớp | PASS |
+| QA-B15 | Bảo toàn CP1 | AST các hàm CP1, nội dung test_cp1 và phần trước B1 khớp Git HEAD | PASS |
+| QA-B16 | Mốc giảng viên | CPS B1–B4 và delta % B1 trong tolerance 2% | PASS |
+
+**QA findings:** không phát hiện lỗi CP1 cần sửa; đã phân biệt mean toàn mẫu với pilot, tránh đếm run ok thành số review, và không cộng thêm tiền retry. Giới hạn còn lại là fallback có thể chồng rework, chất lượng được giữ cố định trong cú sốc giá/phút, và B4 không phản ánh end-to-end cho 982 yêu cầu.
+
+**CP2 COMPLETE:** B1 DONE · B2 DONE · B3 DONE · B4 DONE · Report DONE · Tests DONE. CP1 giữ nguyên. Chuyển CP5 các mức tăng 51,765%/40,699%/23,116%, chính sách 2 attempts rẻ nhất toàn mẫu và B4 vượt 12.000 VND khi rework ~15,3 phút (simulated); chưa triển khai CP3–CP5, chưa commit/push.

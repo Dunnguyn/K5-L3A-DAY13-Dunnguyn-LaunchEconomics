@@ -187,6 +187,110 @@ def phan_tich_co_dinh(runs, reqs):
     return pd.DataFrame(rows)
 
 
+# ---------- CP2 · Nhiệm vụ B · Phân tích độ nhạy ----------
+def phan_tich_do_nhay(runs, reqs):
+    """B1: baseline và 9 cú sốc, tính lại qua mo_hinh; không làm tròn số.
+
+    tong: VND; cps/delta_vnd: VND/success; delta_pct: %. Các chỉ số chi phí
+    có phần simulated. Hệ số phút thay đổi chi phí, không mô phỏng lại chất lượng.
+    """
+    kich_ban = [
+        ('B1-01', 'Token ×2', dict(gia_vao=52, gia_ra=260)),
+        ('B1-02', 'Token ×0,5', dict(gia_vao=13, gia_ra=65)),
+        ('B1-03', 'Review ×2', dict(he_so_xem_lai=2.0)),
+        ('B1-04', 'Review ×0,5', dict(he_so_xem_lai=0.5)),
+        ('B1-05', 'Rework ×2', dict(he_so_lam_lai=2.0)),
+        ('B1-06', 'Rework ×0,5', dict(he_so_lam_lai=0.5)),
+        ('B1-07', 'Lương +25%', dict(luong_phut=2500)),
+        ('B1-08', 'Tối đa 2 lần', dict(max_lan_chay=2)),
+        ('B1-09', 'Tối đa 1 lần', dict(max_lan_chay=1)),
+    ]
+    goc = mo_hinh(runs, reqs)
+    if not math.isfinite(goc['cps']) or goc['cps'] <= 0:
+        raise ValueError('Độ nhạy cần baseline CPS hữu hạn, dương')
+    rows = []
+    for ma, ten, kw in [('B1-00', 'Baseline', {})] + kich_ban:
+        m = mo_hinh(runs, reqs, **kw)
+        rows.append(dict(id=ma, kich_ban=ten, tham_so=str(kw), tong=m['tong'],
+                         thanh_cong=m['thanh_cong'], cps=m['cps'],
+                         delta_vnd=m['cps'] - goc['cps'],
+                         delta_pct=(m['cps'] / goc['cps'] - 1) * 100))
+    return pd.DataFrame(rows)
+
+
+def phan_tich_ket_hop(runs, reqs):
+    """B2: cộng tác động trên CPS; ranking các cú sốc bất lợi đã chỉ định.
+
+    interaction (VND/success) xấp xỉ 0 khi mẫu số không đổi; không phải
+    hệ số nhạy chuẩn hóa vì lương +25% khác quy mô token/review/rework +100%.
+    """
+    b1 = phan_tich_do_nhay(runs, reqs).set_index('id')
+    m = mo_hinh(runs, reqs, gia_vao=52, gia_ra=260, he_so_xem_lai=2.0)
+    delta = float(m['cps'] - b1.loc['B1-00', 'cps'])
+    rieng = b1.loc[['B1-01', 'B1-03'], 'delta_vnd'].sum()
+    ranking = b1.loc[['B1-01', 'B1-03', 'B1-05', 'B1-07']].sort_values(
+        'delta_pct', ascending=False).head(3).reset_index()
+    return dict(tong=m['tong'], thanh_cong=m['thanh_cong'], cps=m['cps'],
+                delta_vnd=delta, delta_pct=float(delta / b1.loc['B1-00', 'cps'] * 100),
+                tong_tac_dong_rieng=float(rieng), interaction=float(delta - rieng),
+                ranking=ranking)
+
+
+def phan_tich_gioi_han_chay(runs, reqs):
+    """B3: agent CPS khác system/request; fallback giả định 12.000 VND/unresolved.
+
+    Giữ nguyên rework của mo_hinh dù có thể chồng fallback; không gồm fixed cost.
+    Quy ước cắt trace và xóa phút của yêu cầu vượt giới hạn nằm trong mo_hinh.
+    """
+    rows = []
+    for k in (1, 2, 3):
+        m = mo_hinh(runs, reqs, max_lan_chay=k)
+        unresolved = len(reqs) - m['thanh_cong']
+        fallback = unresolved * BASELINE
+        system = m['tong'] + fallback
+        rows.append(dict(max_attempts=k, agent_cost=m['tong'], successes=m['thanh_cong'],
+                         unresolved=unresolved, fallback=fallback, system_cost=system,
+                         system_per_request=system / len(reqs) if len(reqs) else 0.0,
+                         agent_cps=m['cps']))
+    return pd.DataFrame(rows)
+
+
+def phan_tich_xem_lai_100(runs, reqs):
+    """B4: review 100% yêu cầu có >=1 run ok trong noi_dia + hang_nang.
+
+    Thay thế hoàn toàn phút simulated cũ bằng 5 phút/review, 9 phút/rework
+    hoặc mean simulated của các ca ket_qua=lam_lai TOÀN MẪU (đúng đề).
+    Báo thêm mean/median riêng phạm vi; giữ token/tool của mọi run và success
+    gốc. CPS không gồm fallback/fixed; break-even = ngân sách còn lại / n_review/lương.
+    """
+    q = reqs.loc[reqs['loai'].isin(['noi_dia', 'hang_nang'])]
+    m = mo_hinh(runs, q)
+    r = runs.loc[runs['request_id'].isin(q['request_id'])]
+    n_review = int(r.loc[r['status'].eq('ok'), 'request_id'].nunique())
+    n_rework = int(q['ket_qua'].eq('lam_lai').sum())
+    all_minutes = reqs.loc[reqs['ket_qua'].eq('lam_lai'), 'phut_lam_lai_simulated']
+    scope_minutes = q.loc[q['ket_qua'].eq('lam_lai'), 'phut_lam_lai_simulated']
+    if not m['thanh_cong'] or not n_review or all_minutes.empty or scope_minutes.empty:
+        raise ValueError('B4 cần success, yêu cầu có run ok và ca lam_lai để ước lượng phút')
+    mean = float(all_minutes.mean())
+    technical = m['token'] + m['tool']
+    rows = []
+    for ten, minutes in [('9 phút theo đề', 9.0), ('Mean toàn mẫu làm tròn 1 số lẻ', round(mean, 1)),
+                         ('Mean toàn mẫu đầy đủ', mean)]:
+        review = n_review * 5 * LUONG_PHUT
+        rework = n_rework * minutes * LUONG_PHUT
+        total = technical + review + rework
+        cps = total / m['thanh_cong']
+        threshold = (BASELINE * m['thanh_cong'] - technical - rework) / (n_review * LUONG_PHUT)
+        rows.append(dict(kich_ban=ten, phut_review=5.0, phut_rework=minutes,
+                         technical=technical, review=review, rework=rework, tong=total,
+                         cps=cps, so_baseline=cps / BASELINE, hoa_von_phut_review=threshold))
+    return dict(so_yc=len(q), thanh_cong=m['thanh_cong'], n_review=n_review, n_rework=n_rework,
+                n_rework_toan_mau=len(all_minutes), mean_toan_mau=mean,
+                median_toan_mau=float(all_minutes.median()), mean_pham_vi=float(scope_minutes.mean()),
+                median_pham_vi=float(scope_minutes.median()), bang=pd.DataFrame(rows))
+
+
 if __name__ == '__main__':
     runs = pd.read_csv('logix_runs.csv')
     reqs = pd.read_csv('logix_requests.csv', keep_default_na=False)
@@ -204,7 +308,18 @@ if __name__ == '__main__':
     print(phan_tich_theo_loai(runs, reqs).to_string(index=False, float_format=lambda x: f'{x:,.3f}'))
     print('A4: CPS gồm fixed 40 triệu VND/tháng (simulated)')
     print(phan_tich_co_dinh(runs, reqs).to_string(index=False, float_format=lambda x: f'{x:,.3f}'))
-    # TODO CP2 · Nhiệm vụ B: đổi từng yếu tố, ghi vào bảng độ nhạy.
+    print('B1: tong VND; cps/delta_vnd VND/success; delta_pct % (simulated)')
+    print(phan_tich_do_nhay(runs, reqs).to_string(index=False, float_format=lambda x: f'{x:,.6f}'))
+    b2 = phan_tich_ket_hop(runs, reqs)
+    print('B2: combined và interaction VND/success (simulated)')
+    print({k: v for k, v in b2.items() if k != 'ranking'})
+    print(b2['ranking'].to_string(index=False, float_format=lambda x: f'{x:,.6f}'))
+    print('B3: chi phí VND; system_per_request VND/request; agent_cps VND/success (simulated)')
+    print(phan_tich_gioi_han_chay(runs, reqs).to_string(index=False, float_format=lambda x: f'{x:,.6f}'))
+    b4 = phan_tich_xem_lai_100(runs, reqs)
+    print('B4: chi phí VND; cps VND/success; thời gian phút (simulated)')
+    print({k: v for k, v in b4.items() if k != 'bang'})
+    print(b4['bang'].to_string(index=False, float_format=lambda x: f'{x:,.6f}'))
     # TODO CP4 · Nhiệm vụ D: cỡ mẫu.
     #   from statsmodels.stats.proportion import proportion_effectsize
     #   from statsmodels.stats.power import NormalIndPower
