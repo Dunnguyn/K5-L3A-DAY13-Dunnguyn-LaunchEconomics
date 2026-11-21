@@ -1,8 +1,10 @@
 # Hồ sơ launch v0 · Trợ lý hoàn phí LogiX-VN · Gate 2a
 
+Người thực hiện: Nguyễn Thị Thùy Dung · 2A202603552 · L3A · Individual Lab. **Biểu mẫu chưa hoàn thành; chưa có kết quả CP5/duyệt chéo.**
+
 Một trang. Cột trạng thái chỉ nhận: **Xong, có bằng chứng · Chưa · Giả lập**. Mục nào dựa trên cột `_simulated` ghi Giả lập. Người phụ trách là một vai trò, không ghi "cả đội". Gate 2a chỉ duyệt kế hoạch pilot: không viết như thể trợ lý đã được duyệt chạy chính thức (xem quy tắc 5 trong `README.md`).
 
-Nhóm: ... · Lớp: ...
+Hình thức: Individual Lab · Lớp: L3A
 
 | Mục | Con số chính | Trạng thái | Người phụ trách |
 | --- | --- | --- | --- |

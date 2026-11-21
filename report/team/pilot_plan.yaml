@@ -1,3 +1,5 @@
+# Người thực hiện: Nguyễn Thị Thùy Dung · 2A202603552 · L3A · Individual Lab
+# Trạng thái: biểu mẫu CP4 chưa hoàn thành; các trường chưa điền được giữ nguyên.
 # Lab 13 · Nhiệm vụ D · Kế hoạch pilot trợ lý hoàn phí LogiX-VN (Gate 2a)
 # Điền mọi chỗ có dấu hỏi. Khi nộp, ngoài các dòng chú thích không còn dấu hỏi nào.
 # Kiểm tra đọc được: python -c "import yaml; yaml.safe_load(open('../report/team/pilot_plan.yaml'))"
