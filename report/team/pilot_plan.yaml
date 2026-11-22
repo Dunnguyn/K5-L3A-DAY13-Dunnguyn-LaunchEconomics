@@ -1,53 +1,309 @@
-# Người thực hiện: Nguyễn Thị Thùy Dung · 2A202603552 · L3A · Individual Lab
-# Trạng thái: biểu mẫu CP4 chưa hoàn thành; các trường chưa điền được giữ nguyên.
-# Lab 13 · Nhiệm vụ D · Kế hoạch pilot trợ lý hoàn phí LogiX-VN (Gate 2a)
-# Điền mọi chỗ có dấu hỏi. Khi nộp, ngoài các dòng chú thích không còn dấu hỏi nào.
-# Kiểm tra đọc được: python -c "import yaml; yaml.safe_load(open('../report/team/pilot_plan.yaml'))"
-#
-# D1 · Cỡ mẫu (baseline 0,70; mục tiêu +5 điểm; alpha 0,05; power 0,8; ICC 0,02)
-#   a) Chia theo yêu cầu:
-#   b) Theo nhân viên, m = 75:
-#   c) 20 nhân viên mỗi nhóm:
-#   d) 6 depot mỗi nhóm:
-#   e) Mức chênh 6 điểm (859 mỗi nhóm), 20 nhân viên mỗi nhóm:
-#
-# D2 · Năm câu kiểm tra "tách được tác động" với cách chia đã chọn (mỗi câu một dòng):
-#   1. Đối chứng chạy cùng thời gian:
-#   2. Chia ngẫu nhiên hay do người chọn:
-#   3. Ảnh hưởng gián tiếp và cách giảm:
-#   4. Chỉ số chính, ngưỡng, ngày quyết định đã viết trước:
-#   5. Ít nhất 20 cụm mỗi nhóm:
-#
-# Đánh đổi đã chấp nhận (nếu cách chia chưa đạt cả hai điều kiện):
-#
-# Tỉ lệ mo_lai_trong_7_ngay hiện tại và ngưỡng an toàn đã chọn:
-
+# Nguyễn Thị Thùy Dung · 2A202603552 · L3A · Individual Lab
+# CP4 COMPLETE về thiết kế/code/QA; kế hoạch Planned, chưa phê duyệt hoặc thực hiện.
+# Gate 2a chỉ xét duyệt kế hoạch pilot; không phải kết luận hiệu quả nhân quả.
+# Nguồn: CHECKPOINTS CP4, RUBRIC C4/C8, docs/du_lieu_va_cong_thuc.md;
+# docs/Lab13_Huong_dan_chi_tiet_buoi_chieu.md, Nhiệm vụ D; tính bởi src/lab13.py.
+# D1-a: co_mau(.70,.75,.05,.80)=1251/arm, hai phía, giả định quan sát độc lập.
+# D1-b: m=75, ICC=.02 => DE=2.48; ceil(1251*2.48)=3103 raw/arm;
+# ceil(3103/75)=42 staff/arm => 3150 raw được phân/arm, 84 staff > 40: không khả thi.
+# D1-c: 20 staff/arm => effective < 20/.02=1000 < 1251 ở mọi m hữu hạn.
+# D1-d: 6 depot/arm => effective < 300 < 1251; chỉ 6 cụm/arm: không chọn.
+# D1-e: co_mau(.70,.76)=859 effective/arm; m>=ceil(859*.98/(20-859*.02))=299;
+# DE=6.96; raw=5980/arm, 11960 tổng; effective=859.195402/arm, không phải 859 raw.
+# Power Cohen h/NormalIndPower: true +6pp=0.800965; true +5pp=0.641755.
+# Xấp xỉ DE chưa thay phân tích cluster-aware; chỉ 20 cụm/arm, cần hiệu chỉnh hữu hạn.
+# D2-01: treatment/control cùng tuần, cùng policy và depot; cân bằng loại yêu cầu.
+# D2-02: staff randomization 20:20, seed 20261122 khóa trước; stratify depot theo roster thật.
+# D2-03: phân quyền staff_id, log open/use, audit trái nhóm; kiểm soát chia sẻ gợi ý.
+# D2-04: khóa metric, eligibility, MDE, N, assignment, ITT, missing/crossover, stop rules, ngày.
+# D2-05: 20+20=40 cụm; trace lab chỉ có 20 staff/6 depot, chưa phải roster triển khai 40 staff.
+# D3: overall=51/1200=4.25%; eligible=39/982=3.971487% từ trace lab giả lập.
+# Ngưỡng đề xuất: reopen treatment-control >=2pp hoặc treatment >6%; không đặt 3% tuyệt đối.
+# Các sự cố giao dịch nghiêm trọng dừng ngay, không chờ cửa sổ 7 ngày hoặc mẫu tối thiểu.
+# Khả thi 6 depot, giả định phân bố đều: 1500*(6/12)=750 requests/ngày;
+# eligible=750*982/1200=613.75/ngày (không phải số đo thực tế, chưa trừ exclusion khác).
+# Lịch cũ 14 ngày chỉ 8592.5 raw, thiếu3367.5; 214.8125/staff <299 nếu chia đều40 staff.
+# Cần ít nhất ceil(11960/613.75)=20 ngày ở100% capture; capture80% cần25 ngày có lưu lượng.
+# Main mới dự kiến28 ngày: 17185 raw trước capture; 13748 nếu capture80%, 343.7/staff bình quân.
+# Chỉ20 ngày hoạt động ở capture80% cho9820 raw: thiếu mẫu; không đồng nhất ngày lịch/ngày có coverage.
+# Staff phân bố đều40/12 =>6 depot chỉ20 staff; cần xác minh/điều chuyển thêm20 để có40 trước khóa roster.
+# Lịch và capture80% chỉ là giả định; số mẫu từng staff, arm, cụm và follow-up là điều kiện quyết định.
 pilot:
-  owner: "?"                      # một người có tên vai trò, không ghi "cả đội"
-  scope: "?"                      # loại yêu cầu nào, depot nào; dựa vào kết quả A3
+  owner: "Giám đốc vận hành LogiX-VN"
+  scope: >-
+    Chỉ noi_dia và hang_nang. CPS so baseline 12000 VND/request lần lượt khoảng
+    0.225x và 0.685x (simulated); loại quoc_te (1.876x) và doi_tac (0.851x,
+    success 54.41%, điều khoản riêng). Kịch bản chính dự kiến tại 6 depot D01-D06,
+    cần xác minh đúng phạm vi với LogiX; không coi các depot của trace là phạm vi đã được duyệt.
+    Cần 40 CSKH làm việc trong 6 depot trước phân nhóm; theo giả định phân bố đều hiện chỉ20,
+    nên phải xác minh năng lực hoặc phương án điều chuyển thêm20 từ depot khác trước khi khóa roster;
+    cần roster thật staff_id/depot, giờ làm, lịch sử khối lượng và loại yêu cầu trước khi chia.
+    Eligibility áp dụng hai arm: yêu cầu mới trong phạm vi, một request_id duy nhất,
+    policy_version hiện hành, dữ liệu truy cập <=12 tháng; âm thanh chưa chuyển thành chữ,
+    bảo hiểm đối tác, quốc tế hoặc thiếu dữ liệu được handoff nhân viên kèm tóm tắt.
+    Ghi mọi exclusion và lý do trước khi biết outcome; không loại lỗi treatment sau phân nhóm.
   assignment:
-    unit: "?"                     # request | staff | depot
+    unit: staff
     control_share: 0.5
     randomized: true
-  rollout: [0.10, 0.25, 0.50]     # mỗi bước một tuần
+    status: Planned_not_executed
+    clusters_per_arm: 20
+    seed: 20261122
+    stratification: >-
+      Khóa roster 40 staff duy nhất, mỗi người một depot và một arm trong toàn kỳ.
+      Sắp roster theo staff_id; phân tầng depot. Dùng bộ sinh PCG64 với seed đã khóa,
+      sinh tối đa 10000 phân bổ 20:20; giữ phân bổ lệch số người trong mỗi depot <=1,
+      mỗi depot có cả hai arm (depot có <2 người phải tuyển bổ sung hoặc sửa thiết kế trước).
+      Chọn ngẫu nhiên một phân bổ hợp lệ với cùng RNG; nếu không có thì dừng thiết kế,
+      không chọn thủ công. Nếu có covariate đáng tin từ 4 tuần trước, thêm ràng buộc cân bằng
+      khối lượng/type mix với tiêu chí khóa trước; không tối ưu sau khi xem outcome.
+      Lưu roster hash, code/version RNG, seed, toàn bộ mapping và audit thời điểm khóa.
+    prerequisite: >-
+      CSV lab chỉ có 20 staff ở D01-D06, không đủ để thực hiện phân bổ 40 staff.
+      Chưa có mapping treatment/control thực tế; không coi sample trace là roster tuyển dụng.
+      Nhu cầu40 staff trong6 depot là điều kiện chưa xác nhận, không phải nguồn lực sẵn có.
+      40 là toàn bộ nguồn lực CSKH giả định của12 depot; điều chuyển20 người không tự khả thi
+      nếu làm mất coverage của6 depot ngoài pilot. Phải xác minh lịch làm và năng lực phục vụ
+      toàn mạng trước duyệt roster; không giả định đã có thêm nhân sự hoặc doanh nghiệp đã chấp thuận.
+      Nếu chỉ có20 staff tổng thì10/arm có trần effective500 <859; kéo dài cũng không cứu thiết kế.
+      Phương án mở tới12 depot với40 staff chỉ được xét riêng trước preregistration, cập nhật scope/lịch
+      và được duyệt; không tự mở depot hoặc tăng staff sau khi nhìn outcome để đủ power.
+  rollout: [0.10, 0.25, 0.50]
   primary_metric:
     name: dong_trong_24h_khong_mo_lai_7_ngay
     baseline: 0.70
-    mde: 0.05
+    mde: 0.06
     alpha: 0.05
     power: 0.80
-    n_per_arm: "?"
-    design_effect: "?"            # 1 nếu chia theo yêu cầu
-    clusters_per_arm: "?"         # để trống nếu chia theo yêu cầu
+    n_per_arm: 859
+    design_effect: 6.96
+    clusters_per_arm: 20
+    raw_n_per_arm: 5980
+    raw_n_total: 11960
+    min_requests_per_staff: 299
+    definition: >-
+      Numerator: request đủ điều kiện đóng trong 24h từ lúc nhận và không mở lại trong 7 ngày
+      từ lúc đóng. Denominator: tất cả request đủ điều kiện thuộc 40 staff đã randomize
+      trong kỳ chính, theo ITT; outcome chỉ chốt khi cửa sổ theo dõi đã trưởng thành.
+      Baseline .70 là giả định thiết kế, không phải success tác nghiệp CP1 hoặc causal lift từ CSV.
+    sample_size_limits: >-
+      859 là effective/arm; 5980 là raw/arm nếu 20 cụm bằng nhau, 299 requests/cụm.
+      Thu tất cả eligible trong kỳ chính; theo dõi từng staff đạt tối thiểu 299, không bỏ outcome xấu.
+      Nếu kích thước cụm lệch, tính lại DE với CV kích thước cụm và sensitivity ICC trước quyết định;
+      công thức bằng cụm không bảo đảm power cho mọi phân bố. Nếu thiếu cụm, thiếu mẫu hoặc thiếu
+      follow-up thì không kết luận hiệu lực; kéo dài/thiết kế lại và lùi decision date có audit.
   identifiability:
-    concurrent_control: "?"
-    spillover_risk: "?"
-    predeclared: "?"
+    concurrent_control: >-
+      Hai arm chạy song song cùng tuần/cùng depot, cùng chính sách hoàn phí và điều kiện vận hành.
+      Control làm thủ công; case routing dùng rule chung không dựa outcome hoặc arm.
+      Ghi depot, staff, type mix, ca làm và thay đổi policy; thay đổi khẩn cấp áp dụng đồng đều và log.
+    spillover_risk: >-
+      Nhân viên có thể chia sẻ câu trả lời; control có thể truy cập nhầm agent; quy trình chung có thể đổi.
+      Chặn agent theo staff_id/arm, log agent_open/agent_use/access_denied với trace_id,
+      audit hàng ngày số control dùng agent, huấn luyện không chia sẻ output giữa arm;
+      sự cố quyền truy cập phải đóng trước khi mở rộng. Request randomization dễ spillover nên không chọn.
+    predeclared: >-
+      Trước 2026-11-30, khóa primary metric, eligibility, MDE .06, ICC .02, 20+20 cụm,
+      raw/effective N, seed và thuật toán, thời kỳ chính, ITT, phân tích điều chỉnh staff,
+      missing/crossover, các luật dừng và ngày quyết định trong bản prereg có version/hash.
+      Chưa thực sự prereg hoặc phân nhóm; mọi sửa đổi cần phê duyệt trước mở dữ liệu efficacy,
+      lưu lý do và lùi lịch nếu cần, không đổi ngưỡng theo kết quả thuận lợi.
   stop_rules:
-    - "NẾU ? TRONG ? THÌ ? KHÔNG THÌ ?"
-    - "NẾU ? TRONG ? THÌ ? KHÔNG THÌ ?"
-    - "NẾU ? TRONG ? THÌ ? KHÔNG THÌ ?"
-  interim_looks: "chỉ kiểm tra chỉ số an toàn"
-  rollback: "?"                   # ai bấm, mất bao lâu, khách được phục vụ bằng gì
-  decision_date: "?"
-  simulated_inputs: ["?"]         # liệt kê mọi con số giả lập đã dùng
+    - >-
+      SR-01 NẾU có >=1 ca đã xác minh hoàn trùng, thông báo thành công khi ledger chưa commit,
+      hoàn sai tiền hoặc bảng giá cũ gây sai tiền; HOẶC tỷ lệ mở lại treatment-control >=0.02
+      hay treatment >0.06 trên cohort trưởng thành có >=200 requests/arm
+      TRONG từng sự cố (khẩn cấp ngay) hoặc lần rà hằng tuần cohort đã theo dõi đủ 7 ngày
+      THÌ Giám đốc vận hành hoặc người ủy quyền đã chốt tắt ghi hoàn tự động ngay, mục tiêu <=30 phút,
+      chặn mở rộng, chuyển thủ công và đối soát ledger; điều tra cache/idempotency/notification,
+      chỉ mở lại khi sửa lỗi, replay test và được Giám đốc vận hành duyệt
+      KHÔNG THÌ tiếp tục giám sát, chỉ xét mở rộng khi cohort đủ mẫu, đủ follow-up,
+      không có sự cố pending và mọi gate còn lại đạt; thiếu dữ liệu thì giữ bước, không mở rộng.
+    - >-
+      SR-02 NẾU variable CPS đo thật >8000 VND/success trong mỗi tuần của hai tuần lịch liên tiếp
+      cùng phiên bản can thiệp và scope, mỗi tuần có >=100 success treatment trưởng thành,
+      hoặc CPS vô hạn do 0 success trong cohort có >0 requests đã trưởng thành
+      TRONG cửa sổ tuần lịch không chồng lấn (0 success xử lý ngay kỳ tuần đó)
+      THÌ Giám đốc vận hành dừng mở rộng; Product Manager và Finance Lead đối soát token/tool,
+      phút review/rework đo thật, trong 3 ngày đề xuất thu hẹp noi_dia hoặc giới hạn retry <=2;
+      thay đổi can thiệp sau khi khóa phải version lại và đánh giá tác động lên ITT, không gộp tùy tiện
+      KHÔNG THÌ giữ bước nếu thiếu mẫu chi phí hoặc thiếu tuần trưởng thành; nếu dữ liệu hiện có
+      nằm trong ngưỡng và các safety/usage gate đạt thì Giám đốc vận hành mới xét mở rộng;
+      gate ramp dùng tuần mới nhất đủ mẫu trong ngưỡng; chưa đủ hai tuần thì chưa kết luận
+      kinh tế đầy đủ, không kết luận từ CPS simulated.
+      Không bỏ qua tuần thiếu mẫu để ghép thành hai tuần liên tiếp; khi thiếu thì giữ rollout.
+      Hai tuần kinh tế chính là hai cohort tuần không chồng lấn của main50%, không dùng một
+      cohort14 ngày như hai tuần; thay đổi can thiệp cần version/audit và đánh giá lại kế hoạch.
+    - >-
+      SR-03 NẾU số suggestion được staff sửa hoặc bỏ / số suggestion đã review >0.40,
+      với >=100 suggestion reviewed duy nhất
+      TRONG một tuần lịch không chồng lấn, đo treatment theo suggestion_id
+      THÌ Giám đốc vận hành giữ rollout; Trưởng nhóm CSKH phỏng vấn 5 staff trong 3 ngày,
+      phân tích trace/nguyên nhân, đề xuất sửa và audit lại >=100 suggestion tuần tiếp theo;
+      chỉ xin mở rộng khi tỷ lệ <=0.40, không còn lỗi quyền truy cập và safety/economic gate đạt
+      KHÔNG THÌ tiếp tục tuần tiếp theo; thiếu 100 review thì không mở rộng,
+      đủ mẫu và <=0.40 chỉ là một gate, cần Giám đốc vận hành duyệt toàn bộ gate trước mở rộng.
+  interim_looks: >-
+    Planned: safety giao dịch theo event thời gian thực và đối soát mỗi 5 phút; giá/cache phiên bản,
+    pending ledger, handoff và thông báo được rà hằng ngày. Reopen rà thứBa với cohort trưởng thành
+    đủ 7 ngày và >=200 requests/arm; nếu quá ít thì giữ bước và báo cả số đếm, không kết luận an toàn.
+    Chốt reopen/cost theo cohort tuần đã đủ tối đa1 ngày đóng +7 ngày theo dõi, rồi rà thứBa
+    sau ngày trưởng thành cuối cùng; không chốt sớm sáng thứHai khi request cuối chưa hết cửa sổ.
+    Usage rà thứBa theo tuần lịch kết thúc; các cohort không chồng lấn; technical cost bất thường >=2x
+    median theo type trong 7 ngày trước, >=30 requests/type/ngày, cần điều tra trong ngày và giữ mở rộng.
+    Nếu chưa có lịch sử 7 ngày thì so ngân sách kỹ thuật đã khóa, không tạo baseline giả.
+    Mỗi look ghi mẫu số/missing, arm contamination, cluster balance và quyết định có người duyệt.
+    Không p-value efficacy giữa kỳ hoặc optional stopping; chỉ phân tích primary một lần sau đủ mẫu,
+    follow-up và QA. Các lần xem safety/cost/usage không được gọi là kiểm định efficacy chính thức.
+  rollback: >-
+    Planned: Giám đốc vận hành hoặc người ủy quyền kích hoạt feature flag/refund-write kill switch,
+    revoke quyền tạo lệnh và xác minh không còn job ghi mới, mục tiêu <=30 phút cần diễn tập xác minh.
+    Khách chuyển luồng CSKH thủ công kèm summary; không gửi lại lệnh pending mù hoặc tự hoàn ngược.
+    Kỹ sư trưởng đối soát ledger/read-back theo transaction_id, idempotency_key và policy_version,
+    tách pending/committed/failed; Finance Lead phê duyệt điều chỉnh, CSKH thông báo đúng trạng thái.
+    Lưu incident_id, trace_id, staff_id, timestamp, snapshot phiên bản, người ra quyết định và audit log.
+    Chỉ bật lại sau replay/fault injection đạt, đối soát xong và Giám đốc vận hành phê duyệt.
+  decision_date: "2027-02-18"
+  simulated_inputs:
+    - "Trace lab giả lập: 1200 requests, 1624 runs, 20 staff ở 6 depot; không phải roster thật."
+    - "Reopen lab: 51/1200=4.25%; eligible 39/982=3.971487%; không phải kết quả RCT."
+    - "CP1 CPS 4471.968 VND/success, total 4373585.132 VND: có phut_xem_lai_simulated/phut_lam_lai_simulated."
+    - "CP1 segment CPS ratios .225/.685/1.876/.851 và CP2 review/rework sensitivities là simulated."
+    - "CP2 rework x2 +51.765%, review x2 +40.699%, wage +25% +23.116%; 2 attempts rẻ nhất trên mẫu simulated."
+    - "B4 review100%/rework15.3: CPS12414.793, break-even review~4.8 phút, simulated; chưa chứng minh tiết kiệm thật."
+    - "Giả định kinh tế: token26/130 VND mỗi 1000, tool15/lượt, lương2000/phút, manual12000/request, fixed40000000/tháng."
+    - "Giả định thiết kế: baseline .70, targets .75/.76, alpha .05, power .80, ICC .02, 40 staff/12 depot, 1500 requests/ngày."
+    - "CP3: 20 tình huống và 5 remediation là phân tích đề bài, không ước lượng incident frequency; bằng chứng reviewer độc lập còn thiếu."
+    - "Pilot phải đo thật timestamp nhận/đóng/mở lại, review/rework, token/tool, ledger, policy/cache, handoff, quyền truy cập, suggestion reviewed."
+  status: Planned
+  gate_2a: "Chỉ xét duyệt kế hoạch; chưa phê duyệt chạy. CP3 độc lập còn PENDING phải được hội đồng ghi nhận."
+  schedule:
+    timezone: Asia/Ho_Chi_Minh
+    proposed: true
+    preregistration_deadline: "2026-11-29"
+    ramp_10: {start: "2026-11-30", end: "2026-12-06", treatment_staff: 4}
+    ramp_25: {start: "2026-12-21", end: "2026-12-27", treatment_staff: 10}
+    main_50: {start: "2027-01-11", end: "2027-02-07", treatment_staff: 20, control_staff: 20}
+    final_followup_end: "2027-02-15"
+    data_qa_end: "2027-02-17"
+    interpretation: >-
+      Rollout là tỷ lệ trong tổng 40 staff, không phải tỷ lệ trong 20 treatment.
+      Chọn thứ tự kích hoạt treatment ngẫu nhiên bằng seed khóa, không chọn người có kết quả tốt.
+      Mỗi bước ramp 10%/25% dự kiến thu một tuần, sau đó chờ đủ 7 ngày theo dõi và QA trước gate;
+      main50% dự kiến28 ngày lịch, có điều kiện đủ40 staff và từng người đạt >=299. Cửa sổ chính chỉ bắt đầu khi đủ 20 treatment,
+      control20 chạy đồng thời; loại dữ liệu hai bước ramp khỏi phân tích efficacy chính.
+      Control phục vụ đồng thời toàn lịch, giữ nguyên roster; một request thuộc kỳ theo timestamp nhận.
+      Ramp10 thu30/11-06/12, outcome trưởng thành hết14/12, gate sớm nhất15/12;
+      ramp25 dự kiến21-27/12, outcome trưởng thành hết04/01, gate sớm nhất05/01.
+      Main50% bắt đầu11/01 nếu gate đạt; cả40 staff thu cùng kỳ, không cộng dữ liệu ramp vào N chính.
+      Hai cohort kinh tế tuần25-31/01 và01-07/02 đủ trưởng thành lần lượt08/02 và15/02,
+      có thể đánh giá cặp tuần liên tiếp đầy đủ vào16/02 nếu mỗi tuần đủ100 success.
+      Request cuối07/02 đóng tối đa08/02, cần đến hết15/02 để đủ7 ngày từ lúc đóng;
+      QA16-17/02, quyết định sớm nhất18/02. Ngày này chỉ hợp lệ khi mọi điều kiện đủ.
+      Không đủ mẫu, gate, lịch nghỉ hoặc follow-up thì lùi lịch theo extension_policy có audit.
+      Lịch chưa được LogiX xác nhận; coverage cuối tuần/ngày nghỉ và từng gate có thể làm bước dài hơn.
+    extension_policy:
+      status: Planned_requires_approval
+      planned_main_days: 28
+      extension_block_days: 7
+      maximum_main_days: 42
+      maximum_main_end_if_start_unchanged: "2027-02-21"
+      maximum_followup_end_if_start_unchanged: "2027-03-01"
+      maximum_decision_if_start_unchanged: "2027-03-04"
+      rule: >-
+        Trước pilot khóa điều kiện gia hạn dựa trên enrollment/coverage đã làm mù outcome efficacy:
+        sau28 ngày nếu một staff<299, arm<5980 hoặc tổng<11960 thì giữ cùng40 staff/arm,
+        eligibility và can thiệp, gia hạn cả hai arm theo block7 ngày tối đa42 ngày main.
+        Thu tất cả eligible tới hết block đã khóa, không bỏ request từ staff thu nhanh,
+        không kéo dài vì p-value hoặc effect không thuận lợi; safety stop luôn có quyền ưu tiên.
+        Kiểm tra cluster-size CV/ICC và missing; raw đủ chưa tự chứng minh effective N hoặc power thực.
+        Nếu hết42 ngày vẫn thiếu thì Inconclusive/không mở rộng; không gia hạn vô hạn hoặc thay staff tùy tiện.
+        Với ngày kết thúc tuyển actual E, follow-up>=E+8 ngày đầy đủ; QA thêm2 ngày, decision>=E+11 ngày
+        và không sớm hơn review của hai cohort tuần kinh tế liên tiếp đủ mẫu đã trưởng thành.
+        Nếu ramp gate hoặc main start lùi, dịch toàn bộ mốc từ actual start/end và cập nhật prereg/audit;
+        decision_date chỉ là lịch có điều kiện, không ngày cố định bắt buộc phải ra kết luận.
+  feasibility:
+    roster_verified: false
+    raw_requests_per_arm: 5980
+    raw_requests_total: 11960
+    planned_collection_days: 28
+    min_eligible_requests_per_staff_per_day: 10.678571
+    required_eligible_requests_per_day_total: 427.142857
+    estimated_eligible_requests_per_day_lab_assumption: 1227.5  # toàn12 depot, không phải phạm vi6
+    conditions: >-
+      Xác minh có đủ 40 staff/20 mỗi arm tại depot có cả treatment/control, năng lực xử lý thực
+      và >=299 eligible/người trong kỳ chính, ghi số ngày có coverage thực; không dùng bình quân
+      mạng thay số đếm từng staff. 28 ngày lịch nhưng chỉ20 ngày coverage và capture80% chỉ9820 raw,
+      phải gia hạn. Capture80% cần tối thiểu25 ngày có lưu lượng/coverage theo giả định chia đều.
+      Không suy diễn mẫu 982/1200 từ 6 depot thành dự báo chắc chắn cho 12 depot hoặc mọi nhân viên.
+      Nếu biến thiên cụm/ICC làm n effective thiếu thì sensitivity/tính lại; mọi sửa cụm hoặc MDE
+      phải trước pilot. Khi đang chạy chỉ gia hạn theo rule enrollment đã khóa, không tự đổi MDE/arm.
+      Tăng requests không thể cứu thiết kế 20 cụm/arm cho +5pp khi trần chỉ1000 <1251.
+    flow_estimate:
+      status: assumption_not_observed
+      network_depots: 12
+      pilot_depots: 6
+      network_requests_per_day: 1500
+      eligible_numerator_lab: 982
+      eligible_denominator_lab: 1200
+      eligible_share_lab: 0.8183333333333334
+      total_requests_per_day_six_depots: 750
+      eligible_requests_per_day_six_depots: 613.75
+      capture_rate_scenario: 0.80
+      captured_eligible_per_day_scenario: 491
+      old_14day_expected_raw: 8592.5
+      old_14day_shortfall_raw: 3367.5
+      old_14day_average_per_staff: 214.8125
+      minimum_coverage_days_full_capture: 20
+      minimum_coverage_days_80pct_capture: 25
+      new_28day_expected_raw_full_capture: 17185
+      new_28day_expected_raw_80pct_capture: 13748
+      new_28day_average_per_staff_80pct_capture: 343.7
+      weekday_only_20day_raw_80pct_capture: 9820
+      staff_uniform_estimate_six_depots: 20
+      required_staff_six_depots: 40
+      additional_staff_to_verify: 20
+      assumptions: >-
+        Chia đều1500 requests/ngày và40 staff trên12 depot;6 depot giữ một nửa lưu lượng.
+        Áp dụng tỷ trọng982/1200 từ trace giả lập cho6 depot chỉ là proxy, chưa đo mix thực.
+        Capture80% là kịch bản để trừ exclusion thêm, không routing vào study staff, thiếu coverage hoặc thiếu dữ liệu;
+        không phải tỷ lệ đã quan sát. Giả định cùng tỷ lệ ở hai arm và phân phối workload đều40 staff.
+        Không suy diễn tổng đủ là từng staff đủ; khác biệt workload/cụm cần kiểm tra riêng.
+        Ngày coverage là ngày đủ nhân lực tiếp nhận eligible theo tốc độ giả định; tránh nhân đôi chiết khấu capture.
+  analysis_plan:
+    population: "ITT: giữ staff theo arm ban đầu; tất cả eligible của kỳ chính kể cả handoff, crossover, lỗi và không sử dụng agent."
+    estimator: >-
+      Chênh lệch tỷ lệ request thành công treatment-control, báo 95% CI và số đếm từng arm.
+      Dùng mô hình xác suất tuyến tính có fixed effects depot và covariate predeclared,
+      suy luận cluster-robust CR2/Satterthwaite theo staff, sensitivity randomization inference
+      đúng cơ chế phân tầng hoặc wild-cluster bootstrap. Chỉ40 cụm cần kiểm tra hiệu chỉnh hữu hạn;
+      không dùng z-test độc lập trên requests rồi bỏ qua clustering.
+    missing_and_crossover: >-
+      Chờ outcome trưởng thành, kiểm tra timestamp và liên kết event; không coi chưa đủ 7 ngày là không mở lại.
+      Khi đã đủ cửa sổ mà outcome thiếu, phân tích chính coi không đạt, báo missing theo arm/staff,
+      sensitivity best/worst bounds; missing >5% ở một arm thì không kết luận hiệu lực và điều tra.
+      Crossover giữ ITT arm ban đầu; báo số control truy cập và mức sử dụng thực, per-protocol chỉ bổ sung.
+      Staff nghỉ/đổi depot giữ arm gốc, log attrition; không thay nhân viên tùy tiện để đạt số cụm.
+    decision: >-
+      Không kết luận causal lift từ trace lab. Khi đủ mẫu, follow-up, QA và assumptions,
+      báo effect/CI cho primary, safety, cost, usage; Go có điều kiện chỉ khi hiệu quả có CI thấp >0,
+      point estimate >=.06, mọi gate an toàn/kinh tế/sử dụng đạt và Giám đốc vận hành duyệt.
+      CI còn bao gồm 0 thì Inconclusive/không mở rộng; adverse safety thì No-go/rollback.
+      Thiết kế chỉ nhắm ~80% power cho .06, không bảo đảm phát hiện .05 (power~.642).
+  economics_measurement: >-
+    SR-02 variable CPS = (mọi token/tool của treatment eligible kể cả retry/lỗi + phút review/rework
+    thực đo bằng event start/end, trừ idle theo quy tắc khóa trước, nhân lương thực xác minh)
+    / số treatment eligible được giải quyết đúng, đóng và không mở lại đủ7 ngày, không sai tiền.
+    Không dùng denominator primary nếu primary còn bao gồm ca sai tiền; audit đúng tiền bắt buộc.
+    Cohort tuần theo lúc nhận, maturity phải đủ trước chốt; 0 success => CPS vô hạn.
+    CPS này tách fixed/fallback: báo thêm total system cost với fallback một lần từ worklog nhân viên,
+    không cộng lại phần rework đã bao gồm; fixed phân bổ theo thời gian/volume thực.
+    8000 là ngưỡng đề xuất trên variable CPS, không phải cam kết tổng chi phí <manual12000.
+    So CP1 4471.968 và B4 12414.793 chỉ là đối chiếu simulated, pilot phải dùng phút/đơn giá đo thật.
+  expansion_gates: >-
+    Tất cả rule Planned cần Giám đốc vận hành phê duyệt trước chạy. Không có incident pending,
+    không control access chưa xử lý, safety matured >=200/arm trong ngưỡng, usage>=100 trong ngưỡng,
+    cost cohort matured>=100 success và không vượt8000 ở tuần gần nhất; hai tuần liên tiếp vượt là stop.
+    Bước10 chỉ4 staff có thể thiếu số mẫu tuần đầu, khi đó giữ bước cho tới đủ dữ liệu; không tự động mở.
+    Main efficacy cần đủ40 cụm và raw/effective N, full follow-up; không gộp ramp để tự nhận đủ power.
+    Chưa đủ40 staff trong6 depot thì chưa được bắt đầu main; gia hạn thời gian không thay điều kiện số cụm.

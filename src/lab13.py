@@ -291,6 +291,154 @@ def phan_tich_xem_lai_100(runs, reqs):
                 median_pham_vi=float(scope_minutes.median()), bang=pd.DataFrame(rows))
 
 
+# ---------- CP4 · Nhiệm vụ D · Thiết kế pilot, chưa triển khai ----------
+def _cp4_real(value, name, lower, upper, closed=False):
+    if (isinstance(value, bool) or not isinstance(value, Real)
+            or not math.isfinite(value)
+            or not (lower <= value <= upper if closed else lower < value < upper)):
+        raise ValueError(f'{name}: giá trị hữu hạn ngoài miền cho phép')
+
+
+def _cp4_positive_int(value, name):
+    if isinstance(value, bool) or not isinstance(value, Integral) or value < 1:
+        raise ValueError(f'{name} phải là số nguyên dương')
+
+
+def co_mau(p1, p2, alpha=0.05, power=0.8):
+    """Mẫu mỗi arm, hai tỷ lệ độc lập, hai phía, phân bổ 1:1; ceil cuối cùng.
+
+    Đây là xấp xỉ chuẩn cho thiết kế, không phải kết quả phân tích cluster.
+    """
+    from statistics import NormalDist
+    for name, value in [('p1', p1), ('p2', p2)]:
+        _cp4_real(value, name, 0, 1, closed=True)
+    _cp4_real(alpha, 'alpha', 0, 1)
+    _cp4_real(power, 'power', 0.5, 1)
+    if p1 == p2:
+        raise ValueError('Hai tỷ lệ phải khác nhau')
+    za = NormalDist().inv_cdf(1 - alpha / 2)
+    zb = NormalDist().inv_cdf(power)
+    pb = (p1 + p2) / 2
+    return math.ceil((za * math.sqrt(2 * pb * (1 - pb))
+                      + zb * math.sqrt(p1 * (1 - p1) + p2 * (1 - p2))) ** 2
+                     / (p2 - p1) ** 2)
+
+
+def design_effect(m, icc=0.02):
+    """Cụm bằng nhau: DE = 1 + (m-1) ICC, 0 <= ICC < 1."""
+    _cp4_positive_int(m, 'm')
+    _cp4_real(icc, 'ICC', 0, 1, closed=True)
+    if icc == 1:
+        raise ValueError('ICC phải nhỏ hơn 1')
+    return 1 + (m - 1) * icc
+
+
+def effective_sample_size(c, m, icc=0.02):
+    """Raw c*m khác effective c*m/DE; trần c/ICC nếu ICC > 0."""
+    _cp4_positive_int(c, 'c')
+    return c * m / design_effect(m, icc)
+
+
+def minimum_requests_per_cluster(n_effective, c, icc=0.02):
+    """m nguyên tối thiểu; trả inf khi c/ICC không thể đạt yêu cầu."""
+    _cp4_positive_int(c, 'c')
+    _cp4_real(n_effective, 'n_effective', 0, math.inf)
+    design_effect(1, icc)
+    if icc > 0 and n_effective >= c / icc:
+        return math.inf
+    m = max(1, math.ceil(n_effective * (1 - icc) / (c - n_effective * icc)))
+    # Kiểm tra hai phía tránh sai số float ngay tại biên nguyên.
+    while effective_sample_size(c, m, icc) < n_effective:
+        m += 1
+    while m > 1 and effective_sample_size(c, m - 1, icc) >= n_effective:
+        m -= 1
+    return m
+
+
+def approximate_power(p1, p2, n_effective, alpha=0.05):
+    """Power xấp xỉ theo Cohen h; không thay suy luận cluster-aware hữu hạn."""
+    from statsmodels.stats.power import NormalIndPower
+    from statsmodels.stats.proportion import proportion_effectsize
+    for name, value in [('p1', p1), ('p2', p2)]:
+        _cp4_real(value, name, 0, 1, closed=True)
+    _cp4_real(n_effective, 'n_effective', 0, math.inf)
+    _cp4_real(alpha, 'alpha', 0, 1)
+    return float(NormalIndPower().power(abs(proportion_effectsize(p1, p2)),
+                                       nobs1=n_effective, alpha=alpha,
+                                       ratio=1, alternative='two-sided'))
+
+
+def safety_baseline(reqs):
+    """D3: số đếm reopening từ trace lab giả lập; không sửa DataFrame.
+
+    Không loại âm thầm các dòng thiếu outcome; dữ liệu không hợp lệ báo lỗi.
+    """
+    columns = {'request_id', 'loai', 'mo_lai_trong_7_ngay'}
+    if not isinstance(reqs, pd.DataFrame) or not columns.issubset(reqs.columns):
+        raise ValueError('Thiếu cột D3 bắt buộc')
+    if (reqs.empty or reqs[list(columns)].isna().any().any()
+            or reqs['request_id'].eq('').any() or reqs['request_id'].duplicated().any()
+            or not reqs['mo_lai_trong_7_ngay'].isin([0, 1]).all()
+            or not reqs['loai'].isin(['noi_dia', 'hang_nang', 'quoc_te', 'doi_tac']).all()):
+        raise ValueError('D3 cần ID duy nhất, loại hợp lệ và outcome nhị phân đầy đủ')
+    eligible = reqs.loc[reqs['loai'].isin(['noi_dia', 'hang_nang'])]
+    if eligible.empty:
+        raise ValueError('Không có yêu cầu trong phạm vi pilot')
+    return {name: dict(n=len(q), reopened=int(q['mo_lai_trong_7_ngay'].sum()),
+                       rate=float(q['mo_lai_trong_7_ngay'].mean()))
+            for name, q in [('overall', reqs), ('pilot', eligible)]}
+
+
+def phan_tich_cp4(reqs):
+    """D1 a-e và D3; mọi số thiết kế được tính, không lấy observed làm effect."""
+    n5, n6 = co_mau(0.70, 0.75), co_mau(0.70, 0.76)
+    icc, c, m_staff = 0.02, 20, 75
+    de_staff = design_effect(m_staff, icc)
+    raw5 = math.ceil(n5 * de_staff)
+    staff = math.ceil(raw5 / m_staff)
+    m6 = minimum_requests_per_cluster(n6, c, icc)
+    de6 = design_effect(m6, icc)
+    ne6 = effective_sample_size(c, m6, icc)
+    rows = [
+        ['a', 'request', None, 1.0, n5, n5, 'Có nếu độc lập; spillover cần kiểm soát'],
+        ['b', 'staff (m=75)', staff, de_staff, raw5, raw5 / de_staff,
+         'Không: cần ' + str(2 * staff) + ' staff > 40'],
+        ['c', 'staff (giới hạn)', c, None, None, c / icc, 'Không: effective < trần 1000'],
+        ['d', 'depot (giới hạn)', 6, None, None, 6 / icc, 'Không: effective < trần 300'],
+        ['e', 'staff (m=' + str(m6) + ')', c, de6, c * m6, ne6,
+         'Có điều kiện: roster, lưu lượng, cụm bằng nhau'],
+    ]
+    table = pd.DataFrame(rows, columns=['Question', 'Randomization unit', 'Clusters/arm',
+                                      'DE', 'Raw N/arm', 'Effective N/arm', 'Feasible?'])
+    return dict(d1=table, n_5pp=n5, n_6pp=n6, raw_required_5pp=raw5,
+                staff_per_arm_5pp=staff, staff_total_5pp=2 * staff,
+                staff_allocated_raw_5pp=staff * m_staff,
+                m_6pp=m6, de_6pp=de6, raw_per_arm_6pp=c * m6,
+                raw_total_6pp=2 * c * m6, effective_6pp=ne6,
+                power_true_5pp=approximate_power(0.70, 0.75, ne6),
+                power_true_6pp=approximate_power(0.70, 0.76, ne6),
+                safety=safety_baseline(reqs))
+
+
+def in_ket_qua_cp4(reqs):
+    """In bảng D1 và câu trả lời a-e, D3; chỉ thiết kế, không chạy RCT."""
+    d = phan_tich_cp4(reqs)
+    print('D1: giả định thiết kế; c/d là trần tiệm cận không đạt ở m hữu hạn')
+    print(d['d1'].to_string(index=False, na_rep='—', float_format=lambda x: f'{x:,.3f}'))
+    print(f"a) {d['n_5pp']} request/arm nếu độc lập; không bảo đảm khi spillover.")
+    print(f"b) DE={design_effect(75):.2f}; required raw={d['raw_required_5pp']}/arm; "
+          f"{d['staff_per_arm_5pp']} staff/arm => {d['staff_allocated_raw_5pp']} raw/arm; "
+          f"tổng {d['staff_total_5pp']} > 40: không khả thi.")
+    print('c) effective < 20/0.02 = 1000 < yêu cầu; thêm request không đủ.')
+    print('d) effective < 6/0.02 = 300; 6 depot/arm dưới 20 cụm.')
+    print(f"e) required effective={d['n_6pp']}; m_min={d['m_6pp']}; DE={d['de_6pp']}; "
+          f"raw={d['raw_per_arm_6pp']}/arm, {d['raw_total_6pp']} tổng; "
+          f"effective thực theo DE={d['effective_6pp']:.6f}.")
+    print(f"Power xấp xỉ: true +5pp={d['power_true_5pp']:.6f}; "
+          f"true +6pp={d['power_true_6pp']:.6f}; cần suy luận điều chỉnh theo staff.")
+    print('D3: trace lab giả lập, không phải baseline doanh nghiệp được đo thật:', d['safety'])
+
+
 if __name__ == '__main__':
     runs = pd.read_csv('logix_runs.csv')
     reqs = pd.read_csv('logix_requests.csv', keep_default_na=False)
@@ -320,6 +468,4 @@ if __name__ == '__main__':
     print('B4: chi phí VND; cps VND/success; thời gian phút (simulated)')
     print({k: v for k, v in b4.items() if k != 'bang'})
     print(b4['bang'].to_string(index=False, float_format=lambda x: f'{x:,.6f}'))
-    # TODO CP4 · Nhiệm vụ D: cỡ mẫu.
-    #   from statsmodels.stats.proportion import proportion_effectsize
-    #   from statsmodels.stats.power import NormalIndPower
+    in_ket_qua_cp4(reqs)

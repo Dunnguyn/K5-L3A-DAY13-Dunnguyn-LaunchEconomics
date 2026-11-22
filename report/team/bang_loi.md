@@ -4,16 +4,15 @@
 
 **Người thực hiện:** Nguyễn Thị Thùy Dung · **MSSV:** 2A202603552 · **Lớp:** L3A · **Hình thức:** Individual Lab.
 
-**Trạng thái: CP3 PARTIAL. Self-review: PENDING. Inter-rater agreement: NOT MET — Individual Lab.**
+**CP3: PARTIAL. Tỷ lệ trùng nhãn trong bảng tổng hợp: 18/20 = 90%, đã tính lại. Final Labels: CONFIRMED — 20/20. Bằng chứng đánh giá độc lập: PENDING.**
 
-Nguồn tình huống: [đề DOCX](../../docs/Ngay13_Lab13_De_bai_hoc_vien.docx), mục “Hai mươi ca lỗi”, bảng 9 của word/document.xml, đủ 20 ca. Định nghĩa và nhãn tham khảo theo [hướng dẫn Nhiệm vụ C](../../docs/Lab13_Huong_dan_chi_tiet_buoi_chieu.md); yêu cầu nghiệm thu theo [RUBRIC](../../RUBRIC.md), [CHECKPOINTS](../../CHECKPOINTS.md) và [RULES](../../RULES.md).
+Tôi tổng hợp hai cột nhãn trong [bảng reviewer được cung cấp](cp3_reviewer_summary.md). Bảng có đủ Case ID 01–20, mỗi cột có 20 nhãn hợp lệ U/S/C/L/H. Tôi đã so từng cặp nhãn, xác định bất đồng tại Case 13 và 17, rồi đối chiếu nhãn đề xuất với bộ Final Labels đã xác nhận.
 
-**Nguồn kết quả và giới hạn:** bộ nhãn có hỗ trợ AI và đã đối chiếu tài liệu tham khảo; đây không phải phân loại độc lập của hai người. Nhãn initial, lời giải và giá trị AI Confidence gốc được giữ nguyên trong [snapshot](cp3_initial_snapshot_AI_assisted.md); confidence này không phải tự đánh giá của người học. Bằng chứng DOCX và đề xuất kết luận được bổ sung khi rà soát. Khai báo công cụ và cách kiểm chứng tập trung tại [báo cáo cá nhân](2A202603552_NguyenThiThuyDung.md#5-công-cụ-hỗ-trợ-và-kiểm-chứng).
+Nguồn tình huống: [đề DOCX](../../docs/Ngay13_Lab13_De_bai_hoc_vien.docx), mục “Hai mươi ca lỗi”, bảng 9. Taxonomy và nhãn tham khảo theo [hướng dẫn Nhiệm vụ C](../../docs/Lab13_Huong_dan_chi_tiet_buoi_chieu.md). Điều kiện nghiệm thu theo [RUBRIC](../../RUBRIC.md), [CHECKPOINTS](../../CHECKPOINTS.md) và [RULES](../../RULES.md): hai bộ nhãn độc lập, agreement ≥80%, khớp reference ≥16/20 và 5 remediation đủ năm loại.
 
-SHA-256 snapshot: `3d0822a1e19bded7f806b058c1db838a7f9cc849564426858ba9c358bab0e417`. Snapshot được lưu trước lượt đối chiếu của trợ lý; điều này không chứng minh người thực hiện chưa xem tài liệu trước đó. Không có timestamp đánh giá hoặc reviewer bổ sung được tạo.
+Theo ghi chú phương pháp trong nguồn bổ sung, hai reviewer đã xác nhận bảng nhưng bảng được chuẩn bị trước khi xác nhận. Tỷ lệ trùng nhãn 90% tính được từ bảng này chưa chứng minh hai người đã tự phân loại riêng trước khi xem bảng tổng hợp. Tôi giữ điều kiện đánh giá độc lập ở trạng thái PENDING cho tới khi có hai phiếu nhãn gốc hoặc bằng chứng về quá trình phân loại riêng biệt.
 
-Lịch sử initial/review và nhãn đề xuất được ghi tại [phiếu đánh giá](cp3_danh_gia_ca_nhan.md). [Phiếu self-review](cp3_self_review.md) còn trống; chưa có cơ sở tính consistency hoặc thay đổi trạng thái đánh giá.
-
+Phiếu đánh giá cá nhân và các snapshot lịch sử đang bị xóa trong working tree từ trước lượt nghiệm thu; tôi không khôi phục hoặc sửa chúng. [Phiếu self-review](cp3_self_review.md) vẫn có 20 dòng đánh giá để trống; tôi không dùng phiếu do trợ lý soạn làm bằng chứng tự đánh giá độc lập hoặc làm bộ nhãn của reviewer thứ hai.
 
 ## 2. Định nghĩa năm nhóm lỗi
 
@@ -31,7 +30,9 @@ Mỗi ca chỉ có 1 primary label; nếu có nhiều yếu tố, ghi rõ nguyê
 
 ## 3. Phân loại 20 tình huống
 
-Bảng trình bày nhãn và phân tích nguyên nhân gốc hiện có. Bộ nhãn initial được bảo toàn trong snapshot; các nhãn kết luận vẫn là đề xuất chờ xác nhận, không phải kết quả của một lượt self-review mới.
+Người học đã tự rà soát và xác nhận 20/20 Final Labels; giữ nguyên nhãn và Root Cause. Ngày xác nhận: 22/11/2026. Trạng thái bộ nhãn cuối: **CONFIRMED — 20/20**.
+
+**Phạm vi xác nhận:** đây là xác nhận bộ nhãn cuối của tôi, không thay thế hai bộ nhãn reviewer gốc hoặc biên bản phân xử bất đồng.
 
 | Case ID | Error Type | Root Cause | Evidence |
 | --- | --- | --- | --- |
@@ -66,34 +67,34 @@ Bảng trình bày nhãn và phân tích nguyên nhân gốc hiện có. Bộ nh
 
 Tổng 20/20; phân bố U/S/C/L/H = 4/5/4/4/3. Số ca trong đề không dùng để ước lượng tần suất lỗi của pilot.
 
+## 4. Tỷ lệ trùng nhãn và đối chiếu reference
 
-## 4. Kết quả đối chiếu và mức độ nhất quán
+Tôi đọc từng dòng trong [bảng nguồn](cp3_reviewer_summary.md), kiểm tra đủ 20 Case ID duy nhất 01–20 và nhãn hợp lệ ở cả hai cột. Tỷ lệ trùng nhãn được tính trên hai cột trước phân xử, không tính trên nhãn cuối đã thống nhất.
 
-Self-review consistency = số initial/review trùng / 20 × 100, chỉ tính khi đủ 20 cặp đánh giá thực tế. Inter-rater agreement cần hai người thật. Reference accuracy = số initial khớp tham khảo / 20 × 100.
-
-| Metric | Bằng chứng | Số khớp / số không khớp | Kết quả | Nghiệm thu |
-| --- | --- | --- | --- | --- |
-| Self-review consistency | Chỉ có 1 bộ nhãn; Phase 2 PENDING | Not evaluated | Not evaluated | Chưa đủ điều kiện tính |
-| Inter-rater agreement | Không có reviewer thứ hai thật | Not evaluated | Not evaluated | NOT MET — Individual Lab |
-| Reference accuracy initial | Snapshot lưu trước lượt đối chiếu; 20 nhãn hợp lệ | 20 / 0 | 100% | Đạt mốc ≥16/20 về khớp nhãn |
-| Reference match của nhãn kết luận đề xuất | 20 đề xuất giữ nguyên nhãn initial phù hợp tham khảo | 20 / 0 | 100% | Không phải lượt đánh giá độc lập mới |
-
-Kết quả đối chiếu là **20/20 = 100%**, đạt mốc khớp nhãn ≥16/20. Kết quả này không thay thế self-review consistency hoặc inter-rater agreement; hai chỉ số chưa thực hiện giữ **Not evaluated**.
-
-
-## 5. Phân tích khác biệt và quy tắc ranh giới
-
-**Initial so reference:** không có bất đồng nhãn trong 20/20 ca; danh sách lệch reference rỗng, không cần sửa nhãn initial. **Initial so self-review:** Not evaluated, không được diễn đạt là “không có bất đồng” vì chưa có lượt review thứ hai.
-
-Các nhãn kết luận đề xuất giữ nguyên cả 20 nhãn initial. Bên dưới là góp ý về độ chính xác của diễn đạt, **không phải bất đồng nhãn hoặc thay đổi bản gốc**:
-
-| Ca | Diễn đạt trong initial gốc | Đối chiếu nguồn | Nhãn đề xuất |
+| Chỉ số | Cách kiểm tra | Kết quả | Trạng thái |
 | --- | --- | --- | --- |
-| 02 | “chọn sai công cụ” | Đề nói gọi tool tra bảng giá với tham số hàng thường thay vì hàng nặng; nên nêu sai tham số/phân loại, không suy ra đã chọn tool khác | Hệ thống |
-| 17 | “trước khi được phát hiện qua kiểm tra” | Đề nêu cache cũ, 212 đơn/9 ngày và không ai mở lại; không nêu audit/người/thời điểm phát hiện. Chỉ dựa vào sai âm thầm, không thêm sự kiện audit | Ngầm |
-| 19 | “giới hạn thời gian lưu trữ/truy cập” | Đề chỉ xác nhận truy cập 12 tháng; không khẳng định dữ liệu cũ đã bị xóa hay giới hạn lưu trữ vật lý | Giới hạn hệ thống |
+| Số cặp nhãn hợp lệ | Mỗi Case ID có nhãn Reviewer 01 và Reviewer 02 | 20/20 | PASS |
+| Số cặp trùng / không trùng | So nhãn từng dòng | 18 trùng / 2 không trùng | VERIFIED — theo bảng tổng hợp |
+| Tỷ lệ trùng nhãn | 18 / 20 × 100 | 90%; cao hơn ngưỡng 80% là 10 điểm phần trăm | PASS về tỷ lệ trong bảng |
+| Case ID bất đồng | L/C ở Case 13; H/S ở Case 17 | Chính xác 13 và 17 | VERIFIED — theo bảng tổng hợp |
+| Tính độc lập của hai lượt đánh giá | Cần bằng chứng tự phân loại riêng trước khi xem bảng | Chưa được chứng minh bởi bảng xác nhận | PENDING |
+| Nhãn đề xuất so Final Labels đã xác nhận | So cột đề xuất trong bảng nguồn với mục 3 | 20/20 trùng; không cần đổi nhãn | CONFIRMED — bộ nhãn hiện tại |
+| Final Labels so reference | So mục 3 với bảng “Nhãn tham khảo cho 20 ca” trong hướng dẫn | 20 trùng / 0 lệch = 100%; đạt ≥16/20 | PASS |
 
-Quy tắc ranh giới cho các ca dễ nhầm:
+**Agreement trong bảng = 18/20 × 100 = 90%.** Đây là kết quả tính lại từ dữ liệu tổng hợp được cung cấp; chưa gọi là inter-rater agreement độc lập đã được nghiệm thu. Kết quả khớp reference 100% và phiếu self-review không thay thế bằng chứng hai người phân loại độc lập.
+
+## 5. Bảng phân xử bất đồng
+
+Hai ca bất đồng được xác định trực tiếp từ bảng nguồn: Case 13 và Case 17. Tôi giữ nguyên hai nhãn reviewer trong nguồn và phân tích theo tình huống của đề. Nhãn phân xử đề xuất L và H đều trùng bộ Final Labels tôi đã xác nhận; không có thay đổi cần xác nhận lại.
+
+| Case ID | Reviewer 01 | Reviewer 02 | Phân tích Root Cause | Quy tắc phân biệt | Nhãn phân xử đề xuất | Đối chiếu Final Label |
+| --- | --- | --- | --- | --- | --- | --- |
+| 13 | L — System Limitation | C — Context Error | Yêu cầu hoàn phí bảo hiểm đối tác nằm ngoài phạm vi chức năng của trợ lý. Trả lời chung chung và không nói rõ giới hạn là yếu tố giao tiếp phụ, không thay đổi nguyên nhân ngoài phạm vi. | Ngoài phạm vi chức năng → L. Có đủ khả năng xử lý nhưng kết quả đúng không phù hợp hoàn cảnh/kỳ vọng → C. | L — System Limitation | Trùng L đã CONFIRMED; giữ nguyên Root Cause |
+| 17 | H — Hidden Error | S — System Error | Cache vẫn dùng bảng giá cũ từ 01/11 khiến đơn dưới 2 kg lệch 1.000–2.000 VND, kéo dài 212 đơn trong 9 ngày mà không ai mở lại. Lỗi kỹ thuật nằm ở cache; theo taxonomy bài lab, H phản ánh tính âm thầm kéo dài. Đề không nêu cơ chế hoặc thời điểm phát hiện cuối cùng. | Sai đã lộ ra trong xử lý thông thường → S; sai tồn tại âm thầm không được nhận biết qua kiểm soát thông thường → H. Không tự thêm sự kiện audit/người phát hiện. | H — Hidden Error | Trùng H đã CONFIRMED; giữ nguyên Root Cause |
+
+Trạng thái: **đã phân tích và đối chiếu với bộ Final Labels CONFIRMED**. Bảng nguồn vẫn ghi nhãn phân xử là đề xuất; tôi không suy diễn rằng hai reviewer đã cùng chấp thuận phân xử hoặc rằng quá trình gắn nhãn đã độc lập. Xác nhận bộ nhãn cuối của tôi đã có từ ngày 22/11/2026 và không thay thế bằng chứng về quy trình reviewer.
+
+Các quy tắc ranh giới tham chiếu khác:
 
 - 01/06/09/14: root cause ở nhập/chọn/bấm sai; thiếu validation là vấn đề khắc phục, không tự đổi primary label.
 - 05 so với 15: audit mới thấy 14 đơn hoàn thừa là Ngầm; nhân viên bắt mức 100% thay 50% trước gửi là Hệ thống.
@@ -109,13 +110,13 @@ Tôi đề xuất 5 biện pháp, mỗi loại một ca: 01/U, 07/S, 18/C, 19/L,
 Tất cả event, threshold, frequency và acceptance dưới đây là **đề xuất**, chưa tồn tại trong CSV. Mỗi event phải mang `trace_id`, `request_id`, thời điểm, phiên bản policy và mã giao dịch khi có; nội dung tài khoản phải che/mã hóa, không log số tài khoản đầy đủ.
 
 
-| Case ID | Error Type | Detection Mechanism | Trigger / Threshold đề xuất | Monitoring Frequency đề xuất | Remediation Action đề xuất | Responsible Role đề xuất | Acceptance Criteria chưa kiểm chứng |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 01 | Do người dùng | `refund_input_validated`: đối chiếu schema và quy tắc tài khoản của ngân hàng được chọn | invalid_required_fields ≥1 hoặc bank_validation_failed = true | Mỗi lần submit, trước tạo lệnh hoàn | Chặn lệnh, đánh dấu trường sai và yêu cầu nhập lại; không cố định một độ dài cho mọi ngân hàng. Nếu vẫn không xác minh được thì handoff có mã lỗi | Product Manager | Test tài khoản thiếu 2 chữ số không tạo lệnh; dữ liệu hợp lệ theo từng ngân hàng được đi tiếp; mọi lần chặn có trace_id |
-| 07 | Hệ thống | `refund_ledger_write` nối `refund_customer_notification` và ledger/read-back theo transaction_id | success_notification = true nhưng ledger_committed != true: count ≥1; lỗi 503 còn tồn tại sau retry | Mỗi giao dịch trước gửi; đối soát lại mỗi 5 phút | Chỉ gửi xác nhận thành công sau commit/read-back; giữ pending khi lỗi, không gửi lại lệnh thiếu idempotency; chuyển đối soát cho nhân viên khi hết retry | AI Engineering Lead | Fault injection 503 ở cả 3 lượt tạo 0 thông báo thành công; commit có bằng chứng mới xác nhận, retry không hoàn trùng |
-| 18 | Ngữ cảnh | `refund_explanation_checked`: đối chiếu thông báo với fee, refund_rate, refund_amount, policy_version | Thiếu ≥1 trường bắt buộc/cách tính hoặc amount != fee × rate | Mỗi thông báo trước gửi; rà các yêu cầu mở lại hằng ngày | Dùng mẫu nêu phí 30.000, tỷ lệ 50%, hoàn 15.000 và căn cứ; nếu dữ liệu không khớp thì giữ thông báo để nhân viên kiểm tra | CSKH Lead | Test ca 18 chứa đủ 30.000 × 50% = 15.000 và nguồn policy; test thiếu trường bị chặn. Tác động lên hiểu đúng/mở lại phải đo trong pilot |
-| 19 | Giới hạn hệ thống | `request_scope_checked` và `handoff_created`: so tuổi đơn với cửa sổ truy cập | Tuổi đơn >12 tháng thì phải handoff; thiếu ≥1 trường summary hoặc không có handoff_id là cảnh báo | Mỗi yêu cầu trước truy xuất; rà hàng chờ mỗi giờ | Nói rõ không truy cập đơn 14 tháng, không suy đoán trạng thái; tạo handoff kèm mã đơn, tuổi đơn, lý do giới hạn và thông tin đã thu thập | Operations Manager | Test đơn 14 tháng tạo đúng 1 handoff có summary và trace_id; 0 kết luận bịa trạng thái; kiểm thử thêm ranh giới 12 tháng theo múi giờ thống nhất |
-| 05 | Ngầm | `refund_audit_checked`: tính lại số phải hoàn từ giá sau giảm, so với ledger và phiên bản policy | refund_amount − expected_post_discount_amount >0 VND: ≥1 ca xác minh | Đối soát tự động mọi hoàn có mã giảm giá mỗi ngày; audit độc lập 20 giao dịch/tuần hoặc toàn bộ nếu ít hơn 20 | Cách ly luồng tính giá khuyến mãi khi có lệch xác minh; sửa căn cứ giá sau giảm, rà lại các giao dịch bị ảnh hưởng và chuyển điều chỉnh cho kế toán | Finance Lead | Bộ test 14 đơn mô phỏng có lỗi như đề được phát hiện trong ≤24 giờ; sau sửa không còn lệch trên cùng bộ test và mỗi điều chỉnh truy xuất tới ledger |
+| Case ID | Error Type | Detection Mechanism | Trigger / Threshold đề xuất | Monitoring Frequency đề xuất | Remediation Action đề xuất | Responsible Role đề xuất | Acceptance Criteria chưa kiểm chứng | Trạng thái kiểm chứng |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 01 | Do người dùng | `refund_input_validated`: đối chiếu schema và quy tắc tài khoản của ngân hàng được chọn | invalid_required_fields ≥1 hoặc bank_validation_failed = true | Mỗi lần submit, trước tạo lệnh hoàn | Chặn lệnh, đánh dấu trường sai và yêu cầu nhập lại; không cố định một độ dài cho mọi ngân hàng. Nếu vẫn không xác minh được thì handoff có mã lỗi | Product Manager | Test tài khoản thiếu 2 chữ số không tạo lệnh; dữ liệu hợp lệ theo từng ngân hàng được đi tiếp; mọi lần chặn có trace_id | Proposed/Planned |
+| 07 | Hệ thống | `refund_ledger_write` nối `refund_customer_notification` và ledger/read-back theo transaction_id | success_notification = true nhưng ledger_committed != true: count ≥1; lỗi 503 còn tồn tại sau retry | Mỗi giao dịch trước gửi; đối soát lại mỗi 5 phút | Chỉ gửi xác nhận thành công sau commit/read-back; giữ pending khi lỗi, không gửi lại lệnh thiếu idempotency; chuyển đối soát cho nhân viên khi hết retry | AI Engineering Lead | Fault injection 503 ở cả 3 lượt tạo 0 thông báo thành công; commit có bằng chứng mới xác nhận, retry không hoàn trùng | Proposed/Planned |
+| 18 | Ngữ cảnh | `refund_explanation_checked`: đối chiếu thông báo với fee, refund_rate, refund_amount, policy_version | Thiếu ≥1 trường bắt buộc/cách tính hoặc amount != fee × rate | Mỗi thông báo trước gửi; rà các yêu cầu mở lại hằng ngày | Dùng mẫu nêu phí 30.000, tỷ lệ 50%, hoàn 15.000 và căn cứ; nếu dữ liệu không khớp thì giữ thông báo để nhân viên kiểm tra | CSKH Lead | Test ca 18 chứa đủ 30.000 × 50% = 15.000 và nguồn policy; test thiếu trường bị chặn. Tác động lên hiểu đúng/mở lại phải đo trong pilot | Proposed/Planned |
+| 19 | Giới hạn hệ thống | `request_scope_checked` và `handoff_created`: so tuổi đơn với cửa sổ truy cập | Tuổi đơn >12 tháng thì phải handoff; thiếu ≥1 trường summary hoặc không có handoff_id là cảnh báo | Mỗi yêu cầu trước truy xuất; rà hàng chờ mỗi giờ | Nói rõ không truy cập đơn 14 tháng, không suy đoán trạng thái; tạo handoff kèm mã đơn, tuổi đơn, lý do giới hạn và thông tin đã thu thập | Operations Manager | Test đơn 14 tháng tạo đúng 1 handoff có summary và trace_id; 0 kết luận bịa trạng thái; kiểm thử thêm ranh giới 12 tháng theo múi giờ thống nhất | Proposed/Planned |
+| 05 | Ngầm | `refund_audit_checked`: tính lại số phải hoàn từ giá sau giảm, so với ledger và phiên bản policy | refund_amount − expected_post_discount_amount >0 VND: ≥1 ca xác minh | Đối soát tự động mọi hoàn có mã giảm giá mỗi ngày; audit độc lập 20 giao dịch/tuần hoặc toàn bộ nếu ít hơn 20 | Cách ly luồng tính giá khuyến mãi khi có lệch xác minh; sửa căn cứ giá sau giảm, rà lại các giao dịch bị ảnh hưởng và chuyển điều chỉnh cho kế toán | Finance Lead | Bộ test 14 đơn mô phỏng có lỗi như đề được phát hiện trong ≤24 giờ; sau sửa không còn lệch trên cùng bộ test và mỗi điều chỉnh truy xuất tới ledger | Proposed/Planned |
 
 ## 7. Ưu tiên xử lý rủi ro
 
@@ -135,48 +136,59 @@ Tất cả event, threshold, frequency và acceptance dưới đây là **đề 
 
 ## 8. Kiểm chứng và giới hạn
 
-Kiểm tra gồm: đối chiếu 20 ID, nhãn và giải thích với snapshot; kiểm tra bằng chứng DOCX; đếm kết quả khớp reference; rà soát cấu trúc bảng và 5 remediation. Các giới hạn về nguồn kết quả được nêu tại mục 1.
+Lượt nghiệm thu ngày 22/11/2026 kiểm tra file hiện có, lịch sử Git, nhãn cuối so reference, tính đầy đủ của remediation và regression CP1–CP2.
 
-| QA ID | Expected | Actual | PASS / FAIL / NOT EVALUATED |
+| QA ID | Nội dung | Bằng chứng hiện tại | Trạng thái |
 | --- | --- | --- | --- |
-| QA-C01 | 20 ca ID 01–20, truy xuất nguồn | 20/20 đủ; nguyên văn DOCX và evidence khớp | PASS |
-| QA-C02 | Initial hợp lệ và đầy đủ | 20/20 nhãn và giải thích hợp lệ; dữ liệu confidence gốc giữ trong snapshot | PASS |
-| QA-C03 | Root cause và evidence cho nhãn kết luận | 20/20 nhãn đề xuất có root cause/evidence; final chính thức chưa được người học xác nhận | PASS |
-| QA-C04 | Bảo toàn initial, không reviewer/kết quả giả | Snapshot trước reference, hash khớp; dữ liệu nguồn và snapshot cũ giữ nguyên | PASS |
-| QA-C05 | Consistency trên hai lượt thật | Phase 2 PENDING; không có review thật để tính consistency | NOT EVALUATED |
-| QA-C06 | Reference sau snapshot; khớp ≥16/20 | Đối chiếu đủ 20 ca: 20 đúng, 0 lệch, 100%; không gọi independent accuracy | PASS |
-| QA-C07 | 5 ca đủ 5 nhóm | 01/07/18/19/05 bao phủ U/S/C/L/H; khớp initial và reference | PASS |
-| QA-C08 | Event/source, threshold, frequency | 5/5 đề xuất đủ; hiệu quả acceptance chưa triển khai kiểm chứng | PASS |
-| QA-C09 | Một accountable owner mỗi dòng | 5/5 có đúng 1 vai trò | PASS |
-| QA-C10 | Không đổi CP1/CP2/CSV/starter/CP4–CP5 | Code, CSV và snapshot giữ nguyên; lần chuẩn hóa chỉ sửa tài liệu trình bày | PASS |
-| QA-C11 | Markdown, provenance và trạng thái rõ | Đủ 9 mục; bảng đúng cột; initial/reference/final đề xuất/review PENDING tách riêng | PASS |
-| QA-C12 | Regression thực tế, syntax, diff check | 30/30 tests PASS; lab13.py và py_compile thành công; git diff --check được chạy | PASS |
+| QA-C01 | Đủ 20 Case ID và Root Cause | 01–20, mỗi ca một nhãn U/S/C/L/H và evidence; bảng giữ nguyên | PASS |
+| QA-C02 | Hai bộ nhãn reviewer độc lập | Có bảng tổng hợp 20 cặp nhãn; chưa có bằng chứng hai người tự phân loại riêng trước khi xem bảng | PENDING |
+| QA-C03 | Xác nhận nhãn cuối | Xác nhận của tôi ngày 22/11/2026; đủ 20 Final Labels | CONFIRMED |
+| QA-C04 | Tỷ lệ trùng nhãn trong bảng ≥80% | Tái tính từ đủ 20 cặp: 18 trùng, 2 lệch, 90% | PASS — theo bảng tổng hợp |
+| QA-C05 | Hai ca bất đồng và phân xử | Case 13 L/C → L; Case 17 H/S → H; có Root Cause/quy tắc, khớp Final Labels đã xác nhận | PASS |
+| QA-C06 | Final Labels khớp reference ≥16/20 | Tính lại từ bảng hiện tại và hướng dẫn: 20/20 = 100% | PASS |
+| QA-C07 | 5 remediation bao phủ 5 nhóm | 01/U, 07/S, 18/C, 19/L, 05/H | PASS |
+| QA-C08 | Cách phát hiện đo được | 5/5 có event/source, threshold và frequency | PASS |
+| QA-C09 | Một vai trò chịu trách nhiệm mỗi dòng | 5/5 có đúng một owner; giữ nguyên biện pháp | PASS |
+| QA-C10 | Bảo toàn dữ liệu | Không sửa code/test CP1–CP2, CSV hoặc phiếu self-review; không khôi phục hay sửa file nhãn lịch sử đang bị xóa | PASS |
+| QA-C11 | Regression CP1–CP2 | Chạy thực tế 30 tests: 30 PASS, 0 FAIL | PASS |
+| QA-C12 | Kiểm tra diff | `git diff --check` không báo lỗi | PASS |
 
-Lệnh regression chạy thực tế tại src bằng Python `.venv`:
+Lệnh regression từ thư mục gốc repository:
 
 ```powershell
-$env:PATH = "$PWD\.venv\Scripts;$env:PATH"
-$env:PYTHONIOENCODING = 'utf-8'
-python lab13.py
-python -m unittest -v test_cp1 test_cp2
-python -m py_compile lab13.py test_cp1.py test_cp2.py
+Push-Location src
+.\.venv\Scripts\python.exe -m unittest -v test_cp1 test_cp2
+Pop-Location
 git diff --check
-git status --short
 ```
 
-Kết quả: **30 tests, 30 PASS, 0 FAIL**; A1 in “Ba phép thử đáp án biết trước: ĐẠT”. Baseline giữ nguyên 978 success, tổng 4.373.585,132 VND, CPS 4.471,968438 VND/success (**simulated**). Kiểm tra tài liệu/hashes không phải kiểm thử hiệu quả remediation.
+Lượt chạy đầu có 29/30 PASS: test bảo toàn báo cáo CP1 phát hiện câu mở đầu `bang_chi_phi.md` bị sửa ở lượt trước. Tôi khôi phục đúng câu gốc theo `HEAD`, không thay code hoặc tests; lượt chạy lại đạt **30/30 PASS**. Đây là khôi phục nội dung CP1 để đáp ứng kiểm tra bảo toàn, không phải thay đổi mô hình chi phí.
 
-Giới hạn còn lại: chưa có self-review thực tế, reviewer thứ hai hoặc miễn trừ; likelihood của cả 5 ca là Unknown; các event và remediation chưa được triển khai để đo hiệu quả.
+Các test này xác minh CP1–CP2, không kiểm chứng nhãn reviewer hoặc hiệu quả remediation. Các event và remediation vẫn Proposed/Planned; likelihood của cả 5 ca là Unknown vì không có mẫu số để ước lượng tần suất.
 
+## 9. Checklist nghiệm thu cuối cùng
 
-## 9. Kết luận
+**CP3: PARTIAL.** Tôi đã tái tính đủ 20 cặp nhãn: 18/20 = 90%; đã phân tích Case 13 và 17, đối chiếu khớp bộ Final Labels CONFIRMED 20/20. Năm remediation đáp ứng cấu trúc yêu cầu. Điều kiện còn PENDING là bằng chứng hai reviewer tự phân loại riêng trước khi xem bảng tổng hợp.
 
-CP3 đã có phân tích 20 ca, 5 nhóm lỗi, 5 đề xuất khắc phục và kết quả đối chiếu 20/20 = 100%. **Nghiệm thu vẫn PARTIAL**: self-review PENDING; inter-rater agreement NOT MET; nhãn kết luận đề xuất chờ người học xác nhận.
+| Điều kiện | Kết quả | Trạng thái |
+| --- | --- | --- |
+| Taxonomy, 20 tình huống, Root Cause và evidence | Đủ; giữ nguyên nội dung | DONE |
+| Hai bộ nhãn reviewer độc lập | Có bảng tổng hợp; chưa có phiếu gốc hoặc bằng chứng phân loại riêng trước khi xem bảng | PENDING |
+| Tỷ lệ trùng nhãn ≥16/20 = 80% | Tái tính 18/20 = 90% từ bảng tổng hợp; tính độc lập xét riêng | DONE — theo bảng tổng hợp |
+| Xác định và phân tích hai ca bất đồng | Case 13 L/C → L; Case 17 H/S → H; khớp nhãn cuối đã xác nhận | DONE |
+| Final Labels được người học xác nhận | 20/20 đã xác nhận ngày 22/11/2026; không thay đổi | CONFIRMED |
+| Final Labels khớp reference ≥16/20 | Tính lại 20/20 = 100% | DONE |
+| 5 remediation đủ năm loại và phát hiện đo được | Giữ nguyên 5/5, có event, ngưỡng, tần suất và một owner | DONE — Proposed/Planned |
+| Regression CP1–CP2 | 30/30 PASS, 0 FAIL | DONE |
+| `git diff --check` | Không có lỗi | DONE |
+| Code CP1–CP2, CSV, dữ liệu reviewer gốc | Không sửa; không tự commit/push | DONE |
 
-Cần bổ sung self-review thực tế nếu thực hiện và quyết định của giảng viên về cách nghiệm thu Individual Lab. Hai lượt của cùng một người không thay thế hai reviewer độc lập.
+Phiếu self-review trống không phải bằng chứng hai reviewer độc lập và không thay thế điều kiện agreement. Kiểm chứng hiệu quả remediation trong pilot là bước vận hành sau, không được mô tả như đã thực hiện. Tôi cần hai phiếu nhãn gốc hoặc bằng chứng về quá trình phân loại riêng trước khi xem bảng để nghiệm thu điều kiện độc lập; bộ Final Labels hiện tại đã được xác nhận và không thay đổi.
 
 Các safety risks cần xem xét ở CP4–CP5: ca 07/20 về thông báo chưa commit hoặc hoàn trùng; ca 05/15/17 về sai tiền/phiên bản giá; ca 12 về chi phí âm thầm. Theo dõi ledger, notification, audit, validation, handoff và explanation với trace_id/request_id/transaction_id/policy_version. Ngưỡng ≥1 sai tiền hoặc giao dịch bất nhất được xác minh là đề xuất để đối soát luồng liên quan, chưa phải luật dừng đã áp dụng.
 
 ## 10. Lịch sử bằng chứng
 
-Phiếu trống trước khi nhận bộ nhãn được giữ trong [snapshot PENDING](cp3_initial_snapshot_PENDING_bcfb8102e793.md), SHA-256 `bcfb8102e7931e7b0479e64ff1708ece9ea16a14617c3cbb188ece3241f34758`. Snapshot bộ nhãn được lưu riêng trước lượt đối chiếu; cả hai snapshot không chỉnh sửa. Hai phiên bản này là lịch sử tài liệu, không phải hai lượt đánh giá.
+Các phiếu và snapshot lịch sử đang bị xóa trong working tree từ trước lượt cập nhật này. Tôi đã đọc bản `HEAD` để kiểm tra nguồn gốc nhưng không phục hồi hoặc ghi đè chúng. Phiếu cá nhân lịch sử có một bộ initial và Phase 2 PENDING; các snapshot lịch sử không tạo thành hai lượt phân loại của hai người. Các xác nhận hash hoặc liên kết tới file snapshot vắng mặt trong báo cáo cũ không được dùng làm bằng chứng đã nghiệm thu ở lượt này.
+
+Nguồn bổ sung là bảng tổng hợp do tôi cung cấp trong cuộc trao đổi ngày 22/11/2026, được chép tại `cp3_reviewer_summary.md`. Hai cột nhãn được giữ nguyên và tính lại ra 18/20 = 90%, bất đồng tại 13 và 17. Bảng này không được mô tả thành hai phiếu gốc đã chứng minh tính độc lập. Bộ Final Labels tại mục 3, tài liệu trong `docs/`, xác nhận nhãn cuối trước đó và kết quả regression tiếp tục được dùng để đối chiếu.
