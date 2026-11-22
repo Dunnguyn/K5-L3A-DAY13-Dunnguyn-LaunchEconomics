@@ -12,7 +12,7 @@ Nguồn tình huống: [đề DOCX](../../docs/Ngay13_Lab13_De_bai_hoc_vien.docx
 
 Theo ghi chú phương pháp trong nguồn bổ sung, hai reviewer đã xác nhận bảng nhưng bảng được chuẩn bị trước khi xác nhận. Tỷ lệ trùng nhãn 90% tính được từ bảng này chưa chứng minh hai người đã tự phân loại riêng trước khi xem bảng tổng hợp. Tôi giữ điều kiện đánh giá độc lập ở trạng thái PENDING cho tới khi có hai phiếu nhãn gốc hoặc bằng chứng về quá trình phân loại riêng biệt.
 
-Phiếu đánh giá cá nhân và các snapshot lịch sử đang bị xóa trong working tree từ trước lượt nghiệm thu; tôi không khôi phục hoặc sửa chúng. [Phiếu self-review](cp3_self_review.md) vẫn có 20 dòng đánh giá để trống; tôi không dùng phiếu do trợ lý soạn làm bằng chứng tự đánh giá độc lập hoặc làm bộ nhãn của reviewer thứ hai.
+Phiếu đánh giá cá nhân và các snapshot lịch sử không còn trong HEAD/filesystem hiện tại sau commit `f33bac6`; nguồn trước đó được lưu tại `ed89502`, không phải file đang chờ xóa chưa commit. [Phiếu self-review hiện có](cp3_self_review.md) đã điền đủ 20/20 nhãn, giải thích và confidence; nhãn khớp Final Labels 20/20. Chưa có xác nhận người điền hoặc thời điểm đánh giá thực tế. Tôi không coi một bộ self-review, phiếu do trợ lý soạn hoặc bảng xác nhận là hai lượt reviewer độc lập.
 
 ## 2. Định nghĩa năm nhóm lỗi
 
@@ -149,7 +149,7 @@ Lượt nghiệm thu ngày 22/11/2026 kiểm tra file hiện có, lịch sử Gi
 | QA-C07 | 5 remediation bao phủ 5 nhóm | 01/U, 07/S, 18/C, 19/L, 05/H | PASS |
 | QA-C08 | Cách phát hiện đo được | 5/5 có event/source, threshold và frequency | PASS |
 | QA-C09 | Một vai trò chịu trách nhiệm mỗi dòng | 5/5 có đúng một owner; giữ nguyên biện pháp | PASS |
-| QA-C10 | Bảo toàn dữ liệu | Không sửa code/test CP1–CP2, CSV hoặc phiếu self-review; không khôi phục hay sửa file nhãn lịch sử đang bị xóa | PASS |
+| QA-C10 | Bảo toàn dữ liệu | Giữ nguyên code/test CP1–CP2, CSV, reviewer labels và nội dung self-review; không ghi đè nguồn nhãn lịch sử | PASS |
 | QA-C11 | Regression CP1–CP2 | Chạy thực tế 30 tests: 30 PASS, 0 FAIL | PASS |
 | QA-C12 | Kiểm tra diff | `git diff --check` không báo lỗi | PASS |
 
@@ -183,12 +183,12 @@ Các test này xác minh CP1–CP2, không kiểm chứng nhãn reviewer hoặc 
 | `git diff --check` | Không có lỗi | DONE |
 | Code CP1–CP2, CSV, dữ liệu reviewer gốc | Không sửa; không tự commit/push | DONE |
 
-Phiếu self-review trống không phải bằng chứng hai reviewer độc lập và không thay thế điều kiện agreement. Kiểm chứng hiệu quả remediation trong pilot là bước vận hành sau, không được mô tả như đã thực hiện. Tôi cần hai phiếu nhãn gốc hoặc bằng chứng về quá trình phân loại riêng trước khi xem bảng để nghiệm thu điều kiện độc lập; bộ Final Labels hiện tại đã được xác nhận và không thay đổi.
+Một bộ self-review đã điền không phải bằng chứng hai reviewer độc lập và không thay thế điều kiện agreement. Người điền và thời điểm đánh giá của phiếu hiện có vẫn chưa được xác minh. Kiểm chứng hiệu quả remediation trong pilot là bước vận hành sau, không được mô tả như đã thực hiện. Tôi cần hai phiếu nhãn gốc hoặc bằng chứng về quá trình phân loại riêng trước khi xem bảng để nghiệm thu điều kiện độc lập; bộ Final Labels hiện tại đã được xác nhận và không thay đổi.
 
 Các safety risks cần xem xét ở CP4–CP5: ca 07/20 về thông báo chưa commit hoặc hoàn trùng; ca 05/15/17 về sai tiền/phiên bản giá; ca 12 về chi phí âm thầm. Theo dõi ledger, notification, audit, validation, handoff và explanation với trace_id/request_id/transaction_id/policy_version. Ngưỡng ≥1 sai tiền hoặc giao dịch bất nhất được xác minh là đề xuất để đối soát luồng liên quan, chưa phải luật dừng đã áp dụng.
 
 ## 10. Lịch sử bằng chứng
 
-Các phiếu và snapshot lịch sử đang bị xóa trong working tree từ trước lượt cập nhật này. Tôi đã đọc bản `HEAD` để kiểm tra nguồn gốc nhưng không phục hồi hoặc ghi đè chúng. Phiếu cá nhân lịch sử có một bộ initial và Phase 2 PENDING; các snapshot lịch sử không tạo thành hai lượt phân loại của hai người. Các xác nhận hash hoặc liên kết tới file snapshot vắng mặt trong báo cáo cũ không được dùng làm bằng chứng đã nghiệm thu ở lượt này.
+Các phiếu và snapshot nhãn lịch sử không còn trong HEAD hiện tại sau commit `f33bac6`; có thể đọc bản trước tại commit `ed89502`. Phiếu cá nhân lịch sử có một bộ initial và Phase 2 PENDING, không mô tả hiện trạng của `cp3_self_review.md` đã điền đủ20 dòng. Các snapshot lịch sử không tạo thành hai lượt phân loại của hai người. Tôi giữ nguyên nguồn nhãn và không dùng xác nhận hash/liên kết cũ làm bằng chứng đánh giá độc lập. Mẫu báo cáo `MSSV_HoTen.md` được khôi phục riêng từ `ed89502` để đáp ứng yêu cầu nộp, không phải phiếu reviewer.
 
 Nguồn bổ sung là bảng tổng hợp do tôi cung cấp trong cuộc trao đổi ngày 22/11/2026, được chép tại `cp3_reviewer_summary.md`. Hai cột nhãn được giữ nguyên và tính lại ra 18/20 = 90%, bất đồng tại 13 và 17. Bảng này không được mô tả thành hai phiếu gốc đã chứng minh tính độc lập. Bộ Final Labels tại mục 3, tài liệu trong `docs/`, xác nhận nhãn cuối trước đó và kết quả regression tiếp tục được dùng để đối chiếu.

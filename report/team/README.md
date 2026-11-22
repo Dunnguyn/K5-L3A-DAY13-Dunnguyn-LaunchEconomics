@@ -1,21 +1,31 @@
 # Hồ sơ Individual Lab Day 13
 
-**Nguyễn Thị Thùy Dung · MSSV 2A202603552 · L3A.** Giữ tên và thư mục hồ sơ theo cấu trúc đề bài; việc thực hiện là cá nhân.
+**Nguyễn Thị Thùy Dung · 2A202603552 · L3A · Individual Lab.** Thông tin trách nhiệm tại [TEAM.md](../../TEAM.md). Bảng dưới liệt kê toàn bộ file hiện có trong thư mục này; trạng thái nội dung tách riêng với trạng thái duyệt/nộp Git.
 
-| File | Nội dung | Trạng thái |
+| File | Nội dung | Trạng thái hiện tại |
 | --- | --- | --- |
-| `bang_chi_phi.md` | CP1: mô hình chi phí; CP2: độ nhạy | Hoàn thành, có kết quả thực thi và 30 tests |
-| `bang_loi.md` | CP3: taxonomy, 20 ca, 5 remediation | Final Labels CONFIRMED 20/20; PARTIAL về quy trình đánh giá |
-| `cp3_danh_gia_ca_nhan.md` | Phiếu lịch sử, có trong Git HEAD | Đang bị xóa trong working tree từ trước lượt nghiệm thu; không phải hai bộ reviewer |
-| `cp3_reviewer_summary.md` | Bảng tổng hợp do người học cung cấp | Tái tính 18/20 = 90%; lệch 13 và 17; tính độc lập PENDING |
-| `cp3_self_review.md` | Phiếu tự review 20 ca | Chưa điền; giữ trống |
-| `cp3_initial_snapshot_PENDING_bcfb8102e793.md` | Phiếu trống lịch sử, có trong Git HEAD | Đang bị xóa trong working tree; không phải lượt review |
-| `pilot_plan.yaml` | CP4: kế hoạch pilot | Biểu mẫu chưa hoàn thành |
-| `chi_so.md` | CP5: chỉ số, event, rủi ro | Biểu mẫu chưa hoàn thành |
-| `ho_so_launch_v0.md` | CP5: hồ sơ Gate 2a | Biểu mẫu chưa hoàn thành |
-| `phieu_cham.md` | Duyệt chéo Gate 2a | Chưa có đánh giá hội đồng |
-| `group_report.md` | Tổng quan bài cá nhân, giữ tên file theo đề | Tổng hợp kết quả hiện có |
-| `2A202603552_NguyenThiThuyDung.md` | Báo cáo cá nhân và phương pháp kiểm chứng | Đã ghi phạm vi, bằng chứng, giới hạn |
-| `MSSV_HoTen.md` | Mẫu báo cáo gốc, có trong Git HEAD | Đang bị xóa trong working tree từ trước lượt nghiệm thu |
+| `README.md` | Danh mục và chỉ dẫn nguồn | Đã đồng bộ filesystem; không phải quyết định nghiệm thu |
+| `bang_chi_phi.md` | CP1 A1–A4 và CP2 B1–B4 | Content Complete;30 tests CP1–CP2; chi phí có phần simulated |
+| `bang_loi.md` | CP3 taxonomy,20 ca, Root Cause,5 remediation và phân xử | Content Complete về phân tích; Independent Review Pending; CP3 PARTIAL |
+| `cp3_reviewer_summary.md` | Bảng tổng hợp nguồn20 cặp nhãn | 18/20=90%, lệch13/17; chưa chứng minh hai lượt độc lập |
+| `cp3_self_review.md` | Một bộ self-review đã điền | Đủ20 nhãn/lý do/confidence; khớp Final Labels20/20; nguồn/người/thời điểm review chưa xác minh |
+| `pilot_plan.yaml` | CP4: D1/D2, kế hoạch pilot, feasibility và stop rules | Design & QA Complete; Planned / Not Approved;25 tests CP4 |
+| `chi_so.md` | CP5 E1–E2:5 KPI,15 event,4 rủi ro,7 preconditions | Content Complete; adoption/audit chưa đo;15 tests CP5 |
+| `ho_so_launch_v0.md` | CP5 E3: dossier7 mục | Content Complete; Go có điều kiện là khuyến nghị, không phê duyệt |
+| `phieu_cham.md` | Template đánh giá Gate 2a | PENDING EXTERNAL REVIEW; giữ nguyên, không tự điền điểm |
+| `group_report.md` | Báo cáo tổng hợp bài cá nhân CP1–CP5 | Đã đồng bộ; tổng70/70 PASS |
+| `2A202603552_NguyenThiThuyDung.md` | Báo cáo cá nhân, công cụ, bằng chứng và giới hạn | Đã cập nhật trạng thái hiện tại; các xác nhận bên ngoài còn PENDING |
+| `MSSV_HoTen.md` | Mẫu báo cáo cá nhân gốc | Khôi phục đúng nội dung từ `ed89502`; giữ mẫu và báo cáo cá nhân riêng |
 
-Người học đã tự rà soát và xác nhận 20/20 Final Labels; giữ nguyên nhãn và Root Cause. Ngày xác nhận: 22/11/2026. Bảng tổng hợp bổ sung đã được tái tính: 18/20 = 90%, bất đồng tại 13 (L/C) và 17 (H/S); phân tích đề xuất L và H khớp Final Labels đã xác nhận. Tính độc lập của hai lượt đánh giá vẫn PENDING theo ghi chú nguồn, nên CP3 PARTIAL. Năm remediation giữ nguyên. Chi tiết bằng chứng và checklist tại báo cáo lỗi và báo cáo cá nhân; phiếu self-review trống không thay thế dữ liệu reviewer độc lập. Thông tin tổ chức theo đề gốc vẫn ở `../../TEAM.md`.
+**Gate 2a: PENDING EXTERNAL REVIEW. Pilot: Planned / Not Approved.** Việc chấp nhận Individual Lab và cách thay thế quy trình nhóm/hai reviewer/peer review chưa có xác nhận giảng viên. [Báo cáo cá nhân](2A202603552_NguyenThiThuyDung.md) khai báo công cụ; [chi_so.md](chi_so.md) ghi bằng chứng gate cần nộp. Không dùng unit tests hoặc self-review làm phê duyệt ngoài.
+
+## Lịch sử Git và nguồn tham chiếu
+
+Các file dưới đây không thuộc danh mục filesystem hiện tại và không còn trong HEAD sau commit `f33bac6`; nội dung lịch sử có thể đọc tại commit `ed89502`, không phải hai phiếu reviewer thật.
+
+| File lịch sử | Nguồn chỉ đọc | Ý nghĩa |
+| --- | --- | --- |
+| `cp3_danh_gia_ca_nhan.md` | `git show ed89502:report/team/cp3_danh_gia_ca_nhan.md` | Initial và biểu mẫu chờ review ở thời điểm đó |
+| `cp3_initial_snapshot_PENDING_bcfb8102e793.md` | `git show ed89502:report/team/cp3_initial_snapshot_PENDING_bcfb8102e793.md` | Phiếu trống lịch sử; không mô tả self-review hiện tại |
+
+File mẫu `MSSV_HoTen.md` vừa được khôi phục trong local, chưa stage theo yêu cầu không chạy git add. Trạng thái đã theo dõi/đã lên GitHub chỉ được xác nhận sau khi người thực hiện review, stage và commit/push; không suy từ việc file hiện có.
