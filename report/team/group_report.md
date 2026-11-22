@@ -48,5 +48,3 @@ CP1–CP2 được kiểm chứng trước với30 tests; CP4 bổ sung25, CP5 b
 **Khuyến nghị: Go có điều kiện**, chỉ xem xét kế hoạch noi_dia + hang_nang. Tất cả gate trong [chi_so.md](chi_so.md) còn Chưa: giao dịch/idempotency/ledger, duyệt thiết kế,40 staff/6 depot và coverage, events đo thật, stop rules/rollback, human review và bằng chứng CP3 độc lập.
 
 Đề gốc yêu cầu nhóm4 người; chấp thuận Individual Lab, cách đáp ứng hai reviewer CP3 và hình thức duyệt Gate 2a đang chờ giảng viên. [Phiếu chấm](phieu_cham.md) giữ nguyên, không tự chấm; không có văn bản miễn/thay thế đã xác minh. Roster40 staff, capture/coverage, mẫu từng staff, kill switch và phút review/rework đo thật chưa xác nhận. Nếu không đáp ứng an toàn/nguồn lực trước hạn thì No-go cho lịch đề xuất, hoãn và trình lại; không tự thay điều kiện thống kê theo outcome.
-
-Commit/push và LMS do người thực hiện quyết định sau review; chưa ghi nhận đã nộp LMS hoặc đúng deadline. Không tự tạo người, kết quả pilot hoặc phê duyệt để hoàn tất hồ sơ.

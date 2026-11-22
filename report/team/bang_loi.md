@@ -4,16 +4,6 @@
 
 **Người thực hiện:** Nguyễn Thị Thùy Dung · **MSSV:** 2A202603552 · **Lớp:** L3A · **Hình thức:** Individual Lab.
 
-**CP3: PARTIAL. Tỷ lệ trùng nhãn trong bảng tổng hợp: 18/20 = 90%, đã tính lại. Final Labels: CONFIRMED — 20/20. Bằng chứng đánh giá độc lập: PENDING.**
-
-Tôi tổng hợp hai cột nhãn trong [bảng reviewer được cung cấp](cp3_reviewer_summary.md). Bảng có đủ Case ID 01–20, mỗi cột có 20 nhãn hợp lệ U/S/C/L/H. Tôi đã so từng cặp nhãn, xác định bất đồng tại Case 13 và 17, rồi đối chiếu nhãn đề xuất với bộ Final Labels đã xác nhận.
-
-Nguồn tình huống: [đề DOCX](../../docs/Ngay13_Lab13_De_bai_hoc_vien.docx), mục “Hai mươi ca lỗi”, bảng 9. Taxonomy và nhãn tham khảo theo [hướng dẫn Nhiệm vụ C](../../docs/Lab13_Huong_dan_chi_tiet_buoi_chieu.md). Điều kiện nghiệm thu theo [RUBRIC](../../RUBRIC.md), [CHECKPOINTS](../../CHECKPOINTS.md) và [RULES](../../RULES.md): hai bộ nhãn độc lập, agreement ≥80%, khớp reference ≥16/20 và 5 remediation đủ năm loại.
-
-Theo ghi chú phương pháp trong nguồn bổ sung, hai reviewer đã xác nhận bảng nhưng bảng được chuẩn bị trước khi xác nhận. Tỷ lệ trùng nhãn 90% tính được từ bảng này chưa chứng minh hai người đã tự phân loại riêng trước khi xem bảng tổng hợp. Tôi giữ điều kiện đánh giá độc lập ở trạng thái PENDING cho tới khi có hai phiếu nhãn gốc hoặc bằng chứng về quá trình phân loại riêng biệt.
-
-Phiếu đánh giá cá nhân và các snapshot lịch sử không còn trong HEAD/filesystem hiện tại sau commit `f33bac6`; nguồn trước đó được lưu tại `ed89502`, không phải file đang chờ xóa chưa commit. [Phiếu self-review hiện có](cp3_self_review.md) đã điền đủ 20/20 nhãn, giải thích và confidence; nhãn khớp Final Labels 20/20. Chưa có xác nhận người điền hoặc thời điểm đánh giá thực tế. Tôi không coi một bộ self-review, phiếu do trợ lý soạn hoặc bảng xác nhận là hai lượt reviewer độc lập.
-
 ## 2. Định nghĩa năm nhóm lỗi
 
 
@@ -153,42 +143,3 @@ Lượt nghiệm thu ngày 22/11/2026 kiểm tra file hiện có, lịch sử Gi
 | QA-C11 | Regression CP1–CP2 | Chạy thực tế 30 tests: 30 PASS, 0 FAIL | PASS |
 | QA-C12 | Kiểm tra diff | `git diff --check` không báo lỗi | PASS |
 
-Lệnh regression từ thư mục gốc repository:
-
-```powershell
-Push-Location src
-.\.venv\Scripts\python.exe -m unittest -v test_cp1 test_cp2
-Pop-Location
-git diff --check
-```
-
-Lượt chạy đầu có 29/30 PASS: test bảo toàn báo cáo CP1 phát hiện câu mở đầu `bang_chi_phi.md` bị sửa ở lượt trước. Tôi khôi phục đúng câu gốc theo `HEAD`, không thay code hoặc tests; lượt chạy lại đạt **30/30 PASS**. Đây là khôi phục nội dung CP1 để đáp ứng kiểm tra bảo toàn, không phải thay đổi mô hình chi phí.
-
-Các test này xác minh CP1–CP2, không kiểm chứng nhãn reviewer hoặc hiệu quả remediation. Các event và remediation vẫn Proposed/Planned; likelihood của cả 5 ca là Unknown vì không có mẫu số để ước lượng tần suất.
-
-## 9. Checklist nghiệm thu cuối cùng
-
-**CP3: PARTIAL.** Tôi đã tái tính đủ 20 cặp nhãn: 18/20 = 90%; đã phân tích Case 13 và 17, đối chiếu khớp bộ Final Labels CONFIRMED 20/20. Năm remediation đáp ứng cấu trúc yêu cầu. Điều kiện còn PENDING là bằng chứng hai reviewer tự phân loại riêng trước khi xem bảng tổng hợp.
-
-| Điều kiện | Kết quả | Trạng thái |
-| --- | --- | --- |
-| Taxonomy, 20 tình huống, Root Cause và evidence | Đủ; giữ nguyên nội dung | DONE |
-| Hai bộ nhãn reviewer độc lập | Có bảng tổng hợp; chưa có phiếu gốc hoặc bằng chứng phân loại riêng trước khi xem bảng | PENDING |
-| Tỷ lệ trùng nhãn ≥16/20 = 80% | Tái tính 18/20 = 90% từ bảng tổng hợp; tính độc lập xét riêng | DONE — theo bảng tổng hợp |
-| Xác định và phân tích hai ca bất đồng | Case 13 L/C → L; Case 17 H/S → H; khớp nhãn cuối đã xác nhận | DONE |
-| Final Labels được người học xác nhận | 20/20 đã xác nhận ngày 22/11/2026; không thay đổi | CONFIRMED |
-| Final Labels khớp reference ≥16/20 | Tính lại 20/20 = 100% | DONE |
-| 5 remediation đủ năm loại và phát hiện đo được | Giữ nguyên 5/5, có event, ngưỡng, tần suất và một owner | DONE — Proposed/Planned |
-| Regression CP1–CP2 | 30/30 PASS, 0 FAIL | DONE |
-| `git diff --check` | Không có lỗi | DONE |
-| Code CP1–CP2, CSV, dữ liệu reviewer gốc | Không sửa; không tự commit/push | DONE |
-
-Một bộ self-review đã điền không phải bằng chứng hai reviewer độc lập và không thay thế điều kiện agreement. Người điền và thời điểm đánh giá của phiếu hiện có vẫn chưa được xác minh. Kiểm chứng hiệu quả remediation trong pilot là bước vận hành sau, không được mô tả như đã thực hiện. Tôi cần hai phiếu nhãn gốc hoặc bằng chứng về quá trình phân loại riêng trước khi xem bảng để nghiệm thu điều kiện độc lập; bộ Final Labels hiện tại đã được xác nhận và không thay đổi.
-
-Các safety risks cần xem xét ở CP4–CP5: ca 07/20 về thông báo chưa commit hoặc hoàn trùng; ca 05/15/17 về sai tiền/phiên bản giá; ca 12 về chi phí âm thầm. Theo dõi ledger, notification, audit, validation, handoff và explanation với trace_id/request_id/transaction_id/policy_version. Ngưỡng ≥1 sai tiền hoặc giao dịch bất nhất được xác minh là đề xuất để đối soát luồng liên quan, chưa phải luật dừng đã áp dụng.
-
-## 10. Lịch sử bằng chứng
-
-Các phiếu và snapshot nhãn lịch sử không còn trong HEAD hiện tại sau commit `f33bac6`; có thể đọc bản trước tại commit `ed89502`. Phiếu cá nhân lịch sử có một bộ initial và Phase 2 PENDING, không mô tả hiện trạng của `cp3_self_review.md` đã điền đủ20 dòng. Các snapshot lịch sử không tạo thành hai lượt phân loại của hai người. Tôi giữ nguyên nguồn nhãn và không dùng xác nhận hash/liên kết cũ làm bằng chứng đánh giá độc lập. Mẫu báo cáo `MSSV_HoTen.md` được khôi phục riêng từ `ed89502` để đáp ứng yêu cầu nộp, không phải phiếu reviewer.
-
-Nguồn bổ sung là bảng tổng hợp do tôi cung cấp trong cuộc trao đổi ngày 22/11/2026, được chép tại `cp3_reviewer_summary.md`. Hai cột nhãn được giữ nguyên và tính lại ra 18/20 = 90%, bất đồng tại 13 và 17. Bảng này không được mô tả thành hai phiếu gốc đã chứng minh tính độc lập. Bộ Final Labels tại mục 3, tài liệu trong `docs/`, xác nhận nhãn cuối trước đó và kết quả regression tiếp tục được dùng để đối chiếu.

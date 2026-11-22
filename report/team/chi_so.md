@@ -1,8 +1,7 @@
 # Đặc tả chỉ số, event và rủi ro kinh tế · CP5 E1–E2
 
-Nguyễn Thị Thùy Dung · 2A202603552 · L3A · Individual Lab. **CP5 CONTENT COMPLETE** về tài liệu/phép tính; **PENDING EXTERNAL REVIEW**. Pilot **Planned / Not Approved**. Đây là đặc tả, chưa triển khai hạ tầng event hoặc thu dữ liệu pilot.
+Nguyễn Thị Thùy Dung · 2A202603552 · L3A · Individual Lab. **CP5 CONTENT COMPLETE** về tài liệu/phép tính; Gate 2a **PENDING EXTERNAL REVIEW**; Pilot **Planned / Not Approved**.
 
-Nguồn: [CHECKPOINTS](../../CHECKPOINTS.md), [RUBRIC C5–C8](../../RUBRIC.md), [công thức và dữ liệu](../../docs/du_lieu_va_cong_thuc.md), [Nhiệm vụ E](../../docs/Lab13_Huong_dan_chi_tiet_buoi_chieu.md), [CP1–CP2](bang_chi_phi.md), [CP3](bang_loi.md), [CP4 hiện tại](pilot_plan.yaml). Số chi phí được tính lại bằng các hàm sẵn có trong `src/lab13.py`; KPI tính trực tiếp từ CSV, đối chiếu độc lập bằng `csv.DictReader` trong `src/test_cp5.py`. Không thay CP1–CP4 hoặc dữ liệu gốc.
 
 ## E1 · Đặc tả KPI
 
@@ -10,13 +9,15 @@ Nguồn: [CHECKPOINTS](../../CHECKPOINTS.md), [RUBRIC C5–C8](../../RUBRIC.md),
 
 Toàn bộ CSV là trace giả lập của lab, không phải số đo vận hành thực tế. Các cờ nhị phân là dữ liệu được cung cấp; CSV không có timestamp để tự xác minh lại thời hạn 24 giờ/7 ngày, không có arm, event dùng agent hoặc kết quả audit. Tôi tính mô tả theo cờ, không suy diễn causal lift.
 
-| Calculation | Numerator | Denominator | Result | Source |
-| --- | --- | --- | --- | --- |
-| KPI-01 | 994 | 1200 | 82,8333% | `sum((dong_trong_24h == 1) & (mo_lai_trong_7_ngay == 0)) / len(reqs)` |
-| KPI-02 | 48 | 177 | 27,1186% | Lọc `duoc_xem_lai == 1`; `sum(quyet_dinh_xem_lai in [sua, bo]) / len(reviewed)` |
-| KPI-03 overall | 51 | 1200 | 4,2500% | `sum(mo_lai_trong_7_ngay == 1) / len(reqs)` |
-| KPI-03 pilot scope | 39 | 982 | 3,9715% | Lọc `loai in [noi_dia, hang_nang]`, cùng công thức mở lại |
-| Rework baseline pilot | 48 | 982 | 4,8880% | Lọc scope; `sum(ket_qua == lam_lai) / len(eligible)` |
+| Loại | Chỉ số | Công thức | Tính thử trên 1.200 yêu cầu |
+| --- | --- | --- | --- |
+| Chính (kết quả) | KPI-01 · Tỷ lệ yêu cầu đóng trong 24 giờ và không mở lại trong 7 ngày | `(dong_trong_24h == 1) AND (mo_lai_trong_7_ngay == 0)`, chia tổng yêu cầu đủ điều kiện | 994/1.200 = **82,83%**; mô tả trace lab |
+| Dùng | KPI-02 · Tỷ lệ gợi ý bị sửa hoặc bỏ | Request đã review có quyết định `sua` hoặc `bo`, chia số request đã review | 48/177 = **27,12%**; mô tả trace lab |
+| An toàn | KPI-03 · Tỷ lệ yêu cầu mở lại trong 7 ngày | Request có `mo_lai_trong_7_ngay == 1`, chia tổng request có kết quả trong CSV | 51/1.200 = **4,25%** toàn mẫu; 39/982 = **3,97%** trong scope noi_dia + hang_nang |
+| Dùng (tự đề xuất) | KPI-04 · Agent Usage Rate | Eligible request treatment có ít nhất một `agent_action_used`, chia mọi eligible request được giao treatment | Chưa có event tương ứng trong CSV; **chưa đo** |
+| An toàn (tự đề xuất) | KPI-05 · Verified Incorrect Refund Rate | Request audit ngẫu nhiên hợp lệ xác nhận hoàn sai, chia tổng request audit ngẫu nhiên hợp lệ | Chưa có audit/ledger event trong CSV; **chưa đo** |
+
+Baseline 70% của CP4 là **giả định thiết kế**, không phải tỷ lệ control quan sát. Không lấy 82,83% trừ 70% để tuyên bố hiệu quả. Tỷ lệ mở lại là proxy an toàn, không khẳng định mọi lần mở lại do agent gây ra; cần audit để phát hiện sai hoàn tiền không bị khách mở lại.
 
 KPI-01 làm tròn 82,83%; KPI-02 là 27,12%. Trong 177 requests reviewed có 129 giữ, 41 sửa và 7 bỏ: `(41+7)/177`, không chia cho 1.200. Primary 994 khác successful resolutions CP1 là 978: CP1 dùng ket_qua=thanh_cong (có điều kiện không sai tiền), còn KPI-01 dùng hai cờ 24h/7 ngày; hai định nghĩa không tương đương. Baseline 70% của CP4 là **giả định thiết kế**, không phải control quan sát; không lấy 82,83% trừ 70% để tuyên bố hiệu quả agent.
 
@@ -35,6 +36,38 @@ KPI-01 làm tròn 82,83%; KPI-02 là 27,12%. Trong 177 requests reviewed có 129
 **Funnel sử dụng:** đo riêng shown, viewed, reviewed, kept, modified, rejected, no_decision và action_used. KPI-02 ở cấp request; SR-03 của CP4 ở cấp suggestion_id: `(sua+bo)/reviewed suggestions`, >=100 suggestion/tuần. Không tráo mẫu số hoặc dùng KPI-02 làm proxy adoption. Không có reviewed/audited denominator thì tỷ lệ là Not evaluated, không phải 0%.
 
 **Audit:** Finance Lead khóa sampling seed và frame trước tuần, lấy ngẫu nhiên đơn giản 20 requests/arm/tuần hoặc toàn bộ nếu ít hơn 20; lưu inclusion_probability và nonresponse. Đối chiếu tổng các ledger entry cùng request với số đúng theo policy/pricing có hiệu lực tại thời điểm giao dịch, refund_count/idempotency và notification. Mỗi request chỉ một kết quả audit tổng hợp; mức độ low/high/critical, hoàn trùng và thành công giả là critical, điều tra ngay theo SR-01. Audit nhắm đích mọi incident và giao dịch rủi ro cao được ghi sampling_frame=targeted, báo riêng; không gộp thẳng vào tỷ lệ mẫu ngẫu nhiên. Báo sai số và số đếm theo arm, không xem 20 mẫu/arm là bảo đảm đủ sức phát hiện lỗi hiếm. Sai tiền và thành công giả được báo riêng; thành công giả kích hoạt incident ngay dù chưa có tiền hoàn để tính KPI-05.
+
+## Danh sách event
+
+Các event dưới đây là **đặc tả đề xuất**, chưa được instrument hoặc thu thập trong pilot. Mỗi event có `trace_id` để nối luồng xử lý; control cũng nhận correlation ID từ lúc tạo request.
+
+| Event | Ai tạo | Thuộc tính chính | Thời điểm |
+| --- | --- | --- | --- |
+| refund_request_created | Ticket intake | `trace_id`, `request_id`, `event_timestamp`, `assigned_staff_id`, `depot_id`, `arm`, `eligible`, `request_correlation_id` | Khi nhận request và chốt eligibility/assignment |
+| agent_run_completed | Agent orchestrator | `trace_id`, `request_id`, `event_timestamp`, `run_id`, `attempt`, `staff_id`, `arm`, `status`, `policy_version`, `pricing_version` | Mỗi run kết thúc, kể cả lỗi |
+| agent_suggestion_shown | Staff UI | `trace_id`, `request_id`, `event_timestamp`, `suggestion_id`, `staff_id`, `arm`, `proposed_refund_amount` | Khi gợi ý được render |
+| staff_review_decision | Review UI | `trace_id`, `request_id`, `event_timestamp`, `suggestion_id`, `staff_id`, `arm`, `decision`, `review_duration_minutes` | Khi lưu quyết định giữ/sửa/bỏ |
+| staff_rework_completed | CSKH workflow | `trace_id`, `request_id`, `event_timestamp`, `rework_id`, `staff_id`, `rework_duration_minutes`, `reason`, `error_type` | Khi hoàn tất work session làm lại |
+| refund_ledger_write | Ledger service | `trace_id`, `request_id`, `event_timestamp`, `transaction_id`, `attempt`, `idempotency_key`, `ledger_status`, `refund_amount`, `committed_at` | Mỗi lần ghi hoặc đọc lại trạng thái giao dịch |
+| handoff_to_staff | Routing service | `trace_id`, `request_id`, `event_timestamp`, `handoff_id`, `assigned_staff_id`, `handling_staff_id`, `arm`, `reason` | Khi chuyển request cho người xử lý |
+| ticket_closed | Ticket service | `trace_id`, `request_id`, `event_timestamp`, `closed_at`, `closure_id`, `staff_id`, `arm`, `resolution_status` | Khi ticket được đóng |
+| ticket_reopened | Ticket service | `trace_id`, `request_id`, `event_timestamp`, `reopened_at`, `closure_id`, `reason`, `arm` | Khi ticket được mở lại |
+| audit_sample_checked | Finance audit | `trace_id`, `request_id`, `event_timestamp`, `audit_id`, `sampling_frame`, `valid_audit`, `verified_incorrect`, `severity` | Khi hoàn tất hoặc đánh dấu audit không hợp lệ |
+| agent_ui_opened | Staff UI | `trace_id`, `request_id`, `event_timestamp`, `staff_id`, `arm`, `session_id` | Khi nhân viên mở màn hình agent |
+| agent_suggestion_viewed | Staff UI | `trace_id`, `request_id`, `event_timestamp`, `suggestion_id`, `staff_id`, `arm`, `viewed_at` | Khi nhân viên chủ động xem gợi ý |
+| agent_action_used | Staff UI | `trace_id`, `request_id`, `event_timestamp`, `staff_id`, `arm`, `action`, `action_id`, `initiated_by` | Khi nhân viên chủ động yêu cầu chạy agent hoặc áp dụng gợi ý |
+| refund_customer_notification | Notification service | `trace_id`, `request_id`, `event_timestamp`, `notification_id`, `transaction_id`, `notified_status`, `ledger_status_at_send` | Khi gửi thông báo trạng thái cho khách |
+| request_observation_finalized | Data pipeline | `trace_id`, `request_id`, `event_timestamp`, `arm`, `followup_complete_at`, `coverage_complete`, `source_watermark`, `missing_reason` | Khi đủ cửa sổ quan sát và kiểm tra độ đầy đủ |
+
+**Kiểm tra chéo:**
+
+| Chỉ số | Event dùng để tính | Đo được từ CSV hiện có? | Còn thiếu |
+| --- | --- | --- | --- |
+| KPI-01 · Primary outcome | `refund_request_created`, `ticket_closed`, `ticket_reopened`, `request_observation_finalized` | Có thể tính mô tả từ cờ CSV; chưa xác minh timestamp/ITT | Timestamp thật, roster/arm, coverage và follow-up |
+| KPI-02 · Sửa/bỏ gợi ý | `agent_suggestion_shown`, `agent_suggestion_viewed`, `staff_review_decision` | Có thể tính mô tả từ CSV; chưa có suggestion-level funnel | `suggestion_id`, event shown/viewed và decision đã instrument |
+| KPI-03 · Mở lại | `refund_request_created`, `ticket_closed`, `ticket_reopened`, `request_observation_finalized` | Có thể tính mô tả từ cờ CSV; chưa xác minh cửa sổ/coverage | Timestamp thật, cohort trưởng thành và source watermark |
+| KPI-04 · Agent Usage Rate | `refund_request_created`, `agent_ui_opened`, `agent_suggestion_viewed`, `agent_action_used` | Chưa đo được | Action audit để phân biệt mở UI, xem và thực sự dùng |
+| KPI-05 · Verified Incorrect Refund Rate | `refund_request_created`, `refund_ledger_write`, `audit_sample_checked`, `refund_customer_notification` | Chưa đo được | Audit ngẫu nhiên, ledger join, policy/pricing version và notification outbox |
 
 ## Event Tracking Specification
 
@@ -75,7 +108,16 @@ Mọi event có `event_id` duy nhất, `trace_id`, `request_id`, `event_timestam
 | KPI-04 | refund_request_created, agent_ui_opened, agent_suggestion_viewed, agent_action_used | request_id, trace_id, staff_id, arm, eligible, action, initiated_by, event_timestamp | Proposed; chưa đo được từ CSV | Thiếu action audit; phân biệt UI open/view/use trước thu thập |
 | KPI-05 | refund_request_created, refund_ledger_write, audit_sample_checked, refund_customer_notification | request_id, trace_id, arm, transaction_id, sampling_frame, valid_audit, verified_incorrect, policy_version, pricing_version, actual_refund_amount, expected_refund_amount, severity | Proposed; chưa đo được từ CSV/20 tình huống | Thiếu audit ngẫu nhiên, ledger join, policy/pricing version và notification outbox |
 
-## E2 · Economic Risk Register
+## E2 · Rủi ro kinh tế
+
+| Rủi ro | Tác động đã tính | Dấu hiệu theo dõi | Hành động | Người phụ trách |
+| --- | --- | --- | --- | --- |
+| RISK-01 · Chi phí rework tăng | CP2 rework ×2 làm CPS tăng **51,765%**, lên **6.786,897 VND/success** (simulated) | Rework rate >7%/tuần với ít nhất 200 eligible requests trưởng thành; theo dõi duration và cost | Rà 20 trace rework hoặc toàn bộ nếu ít hơn; phân loại nguyên nhân; giữ mở rộng và xem xét thu hẹp scope/retry sau phê duyệt | PM trợ lý hoàn phí |
+| RISK-02 · Human review bắt buộc làm mất lợi thế chi phí | Review100%, rework9 phút: **11.742,793 VND/success**; rework15,3 phút: **12.414,793**, vượt baseline12.000; break-even review **4,803 phút** (simulated) | Review coverage >50%, mean review >4,8 phút và tối thiểu100 requests reviewed | Giữ review ở giao dịch rủi ro; chỉ giảm theo bậc sau phê duyệt dựa trên audit và safety | Trưởng nhóm CSKH |
+| RISK-03 · Volume thấp pha loãng fixed cost | Fixed40 triệu/tháng; half volume làm fixed/success **1.185,185→2.370,370**, total CPS **4.599,089→5.784,274** (simulated) | Eligible volume, success trưởng thành, coverage days và allocation fixed theo scope | Không mở rộng khi thiếu volume; rà chi phí fixed; báo riêng variable CPS/system cost; gia hạn thu mẫu theo CP4 | Finance Lead |
+| RISK-04 · Thiếu staff/coverage gây thiếu mẫu | Cần11.960 eligible requests và40 staff; 28 ngày ×80% capture ước tính13.748, còn20 ngày ước tính9.820, thiếu2.140 | Enrollment từng staff/arm, coverage và roster; kiểm tra capacity ít nhất299 requests/staff | Không bắt đầu nếu thiếu roster; giữ phân bổ20+20, gia hạn theo block7 ngày trong giới hạn CP4; thiếu mẫu thì Inconclusive, không mở rộng | Operations Manager |
+
+### Economic Risk Register (chi tiết ngưỡng và trạng thái)
 
 Các ngưỡng dưới đây là **Planned**, cần phê duyệt; cảnh báo quản trị bổ sung không sửa SR-01–SR-03 của CP4. Mọi tác động chi phí là **simulated**, không phải kết quả pilot hoặc dự báo chắc chắn. Theo dõi theo arm/type/staff và báo mẫu số, dữ liệu thiếu; ít mẫu thì giữ rollout thay vì kết luận an toàn/kinh tế đạt.
 
